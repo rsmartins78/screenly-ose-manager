@@ -1,4 +1,4 @@
-var client = require("./dbconn.js");
+const client = require("./dbconn.js");
 
 module.exports = {
   insertdevice: function(payload, callback) {

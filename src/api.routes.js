@@ -2,18 +2,19 @@ const express = require("express");
 const routes = express.Router();
 const request = require("request");
 const dbclient = require("./dbquery");
+var IncomingForm = require("formidable").IncomingForm;
 
 // To get devices
 routes.get("/devices", (req, res) => {
-  var query = req.query.query;
-  // var from = req.query.start;
-  // var size = req.query.limit;
-  var from = 0;
-  var size = 0;
+  let query = req.query.query;
+  // let from = req.query.start;
+  // let size = req.query.limit;
+  let from = 0;
+  let size = 0;
 
   function sendResponse(value) {
     if (!value.status) {
-      var editedBody = { success: true, message: "Records Loaded" };
+      let editedBody = { success: true, message: "Records Loaded" };
       Object.assign(value.hits, editedBody);
       res.send(value.hits);
     } else if (value.status == 404) {
@@ -93,7 +94,7 @@ routes.put("/devices", (req, res) => {
 
 // To delete devices by ID
 routes.delete("/devices", (req, res) => {
-  var device_id = req.query.id;
+  let device_id = req.query.id;
   if (device_id) {
     dbclient.deleteDevice(device_id, function(resp) {
       if (resp.result == "deleted") {
@@ -222,6 +223,64 @@ routes.post("/assets/:device", (req, res) => {
       }
     );
   }
+});
+
+routes.post("/fileassets/:device", (req, res) => {
+  let device = req.params.device;
+
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message:
+        "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+    });
+  }
+
+  let form = new IncomingForm();
+  form.uploadDir = "uploads";
+  form.keepExtensions = true;
+
+  form.parse(req, function(err, fields, files) {
+    if (err) {
+      console.log("some error", err);
+      res.send(500);
+    } else if (!files.file) {
+      console.log("no file received");
+      res.send(400);
+    } else {
+      var file = files.file;
+      console.log("saved file to", file.path);
+      console.log("original name", file.name);
+      console.log("type", file.type);
+      console.log("size", file.size);
+      res.send(200);
+    }
+  });
+
+
+  // } else {
+  //   let url = "http://" + device + "/api/v1/file_asset";
+
+  //   request.post(
+  //     {
+  //       url: url,
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: body,
+  //       json: true
+  //     },
+  //     function(error, response, body) {
+  //       if (error) {
+  //         console.log(error);
+  //         res.status(500).send(error);
+  //       } else {
+  //         res.setHeader("Content-Type", "application/json");
+  //         res.status(200).send(body);
+  //       }
+  //     }
+  //   );
+  // }
 });
 
 // To update an asset in select device

@@ -1,6 +1,6 @@
-var elasticsearch = require("elasticsearch");
+const elasticsearch = require("elasticsearch");
 
-var client = new elasticsearch.Client({
+const client = new elasticsearch.Client({
   host: process.env.ELASTIC_HOST || "http://localhost:9200/",
   log: process.env.LOG || "info",
   maxRetries: 5,
