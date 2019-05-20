@@ -107,27 +107,202 @@ routes.delete("/devices", (req, res) => {
   }
 });
 
-routes.get("/assets", (req, res) => {
-  let device = req.query.device;
-  let url = "http://" + device + "/api/v1.1/assets";
+// To retrieve assets from selected device
+routes.get("/assets/:device", (req, res) => {
+  let device = req.params.device;
 
-  request.get(
-    {
-      url: url,
-      headers: {
-        "Content-Type": "application/json"
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message: "please inform device addess with ?device=value in request url"
+    });
+  } else {
+    let url = "http://" + device + "/api/v1.1/assets";
+
+    request.get(
+      {
+        url: url,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      function(error, response, body) {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(body);
+        }
       }
-    },
-    function(error, response, body) {
-      if (error) {
-        console.log(error);
-        res.status(500).send(error);
-      } else {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(body);
+    );
+  }
+});
+
+// To retrieve the select asset from selected device
+routes.get("/assets/:device/:assetId", (req, res) => {
+  let device = req.params.device;
+  let assetId = req.params.assetId;
+
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message: "please inform device addess with ?device=value in request url"
+    });
+  } else {
+    let url = "http://" + device + "/api/v1.1/assets/" + assetId;
+
+    request.get(
+      {
+        url: url,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      },
+      function(error, response, body) {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(body);
+        }
       }
-    }
-  );
+    );
+  }
+});
+
+// To insert asset to selected device
+// Necessary to inform device address on query string
+// Payload Example:
+// {
+//   "name":"Teste",
+//   "mimetype":"webpage",
+//   "uri":"http://localhost:8080",
+//   "is_active":1,
+//   "start_date":"2019-05-20T14:34:00.000Z",
+//   "end_date":"2019-06-19T14:34:00.000Z",
+//   "duration":"10",
+//   "is_enabled":0,
+//   "is_processing":0,
+//   "nocache":0,
+//   "play_order":0,
+//   "skip_asset_check":"1"
+// }
+routes.post("/assets/:device", (req, res) => {
+  let device = req.params.device;
+  let body = req.body;
+
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message:
+        "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+    });
+  } else {
+    let url = "http://" + device + "/api/v1.1/assets";
+
+    request.post(
+      {
+        url: url,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: body,
+        json: true
+      },
+      function(error, response, body) {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(body);
+        }
+      }
+    );
+  }
+});
+
+// To update an asset in select device
+routes.put("/assets/:device/:assetId", (req, res) => {
+  let device = req.params.device;
+  let assetId = req.params.assetId;
+  let body = req.body;
+
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message:
+        "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+    });
+  } else {
+    let url = "http://" + device + "/api/v1.1/assets/" + assetId;
+
+    request.put(
+      {
+        url: url,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: body,
+        json: true
+      },
+      function(error, response, body) {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(body);
+        }
+      }
+    );
+  }
+});
+
+// To delete an asset to selected device
+routes.delete("/assets/:device/:assetId", (req, res) => {
+  let device = req.params.device;
+  let assetId = req.params.assetId;
+  let body = req.body;
+
+  if (device == undefined) {
+    res.status(400).send({
+      success: false,
+      message:
+        "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+    });
+  } else {
+    let url = "http://" + device + "/api/v1.1/assets/" + assetId;
+
+    request.delete(
+      {
+        url: url,
+        headers: {
+          "Content-Type": "application/json"
+        }
+        // body: body,
+        // json: true
+      },
+      function(error, response, body) {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          if (body.error) {
+            console.log(body.error);
+            res.status(503).send(body.error);
+          } else {
+            res.setHeader("Content-Type", "application/json");
+            res
+              .status(200)
+              .send({ success: true, message: "asset removed from device" });
+          }
+        }
+      }
+    );
+  }
 });
 
 module.exports = routes;

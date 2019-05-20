@@ -2,14 +2,13 @@ var elasticsearch = require("elasticsearch");
 
 var client = new elasticsearch.Client({
   host: process.env.ELASTIC_HOST || "http://localhost:9200/",
-  // log: "trace",
+  log: process.env.LOG || "info",
   maxRetries: 5,
   requestTimeout: 60000,
-  sniffOnStart: true
 });
 
 client.cluster.health({}, function(err, resp, status) {
-  console.log("-- Client Health --\n", resp);
+  console.log("-- Client Health --\n", resp,"\n -- End --");
   client.indices.exists({ index: "screenly" }, function(error, resp, status) {
     if (resp === false) {
       console.log(resp);
@@ -27,7 +26,7 @@ client.cluster.health({}, function(err, resp, status) {
         }
       );
     } else {
-      console.log("Indice 'screenly' já existe, não será criado.");
+      console.log("DB Structure Ok");
     }
   });
 });

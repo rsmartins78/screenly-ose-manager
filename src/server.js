@@ -9,6 +9,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 var app_context = process.env.CONTEXT || "/api/v1";
+app.use(express.static('public'));
 app.use(app_context, require("./api.routes"));
 
 var port = process.env.PORT || 5000;
