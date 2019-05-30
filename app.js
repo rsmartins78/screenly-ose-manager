@@ -19,6 +19,6 @@ app.use(morgan((tokens, req, res) => [
 ].join(' ')));
 
 app.use(express.static('public'));
-app.use(appContext, require('./api.routes'));
+app.use(appContext, require('./src/api.routes'));
 
 module.exports = app;
