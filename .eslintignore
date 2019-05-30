@@ -1,0 +1,5 @@
+build/
+node_modules/
+src/auxiliarFunctions
+src/tests/unit/reports/htmlReports
+documentation

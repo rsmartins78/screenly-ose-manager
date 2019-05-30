@@ -1,32 +1,38 @@
-const elasticsearch = require("elasticsearch");
+const elasticsearch = require('elasticsearch');
 
 const client = new elasticsearch.Client({
-  host: process.env.ELASTIC_HOST || "http://localhost:9200/",
-  log: process.env.LOG || "info",
+  host: process.env.ELASTIC_HOST || 'http://localhost:9200/',
+  log: process.env.LOG || 'info',
   maxRetries: 5,
   requestTimeout: 60000,
 });
 
-client.cluster.health({}, function(err, resp, status) {
-  console.log("-- Client Health --\n", resp,"\n -- End --");
-  client.indices.exists({ index: "screenly" }, function(error, resp, status) {
+client.cluster.health({}, (err, resp) => {
+  if (err) {
+    throw new Error(err.message);
+  }
+  console.log('-- Client Health --\n', resp, '\n -- End --');
+  client.indices.exists({ index: 'screenly' }, (error, result) => {
+    if (error) {
+      throw new Error(error.message);
+    }
     if (resp === false) {
-      console.log(resp);
+      console.log(result);
       client.indices.create(
         {
-          index: "screenly"
+          index: 'screenly',
         },
-        function(error, resp, status) {
-          if (error) {
-            console.log(error);
+        (exception, res) => {
+          if (err) {
+            throw new Error(exception);
           } else {
-            console.log(resp);
+            console.log(res);
             console.log("Indice 'screenly' criado.");
           }
-        }
+        },
       );
     } else {
-      console.log("DB Structure Ok");
+      console.log('DB Structure Ok');
     }
   });
 });

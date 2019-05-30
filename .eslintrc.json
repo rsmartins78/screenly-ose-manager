@@ -1,0 +1,23 @@
+{
+    "extends": "airbnb",
+    "rules": {
+        "no-console": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": true
+            }
+        ],
+        "prefer-destructuring": [
+            "error",
+            {
+                "VariableDeclarator": {
+                    "array": false,
+                    "object": false
+                }
+            }
+        ]
+    },
+    "globals": {
+    }
+}
