@@ -12,13 +12,7 @@ const appContext = process.env.CONTEXT || '/api/v1';
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(morgan((tokens, req, res) => [
-  tokens.method(req, res),
-  tokens.url(req, res),
-  tokens.status(req, res),
-  tokens.res(req, res, 'content-length'), '-',
-  tokens['response-time'](req, res), 'ms',
-].join(' ')));
+app.use(morgan(`:remote-addr - :remote-user [:date[clf]] :method :url HTTP/:http-version :status :res[content-length] :response-time ms - :user-agent`));
 app.use(express.static('public'));
 app.use(appContext, require('./src/api.routes'));
 
