@@ -131,35 +131,55 @@ module.exports = {
     form.uploadDir = 'public/uploads';
     form.keepExtensions = true;
 
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        console.log('some error', err);
-        res.status(500).send(err);
-      } else if (!files.formData) {
-        console.log('no file received');
-        res.status(400).send({ success: false, message: 'Failed to receive file' });
-      } else {
-        const file = files.formData;
-        const url = `http://${device}/api/v1/file_asset`;
-        const formReq = request.post(url, (error, response, body) => {
-          if (error) {
-            console.log('Error!\n', error);
-            res.status(500).send({ success: false, message: 'Failed to sent file to device' });
-          } else {
-            console.log('Path on Device:', body);
-            res.status(200).send({
-              success: true, message: 'File sent', path: body.replace(/"/g, ''), mimetype: file.type.split('/')[0],
-            });
-          }
-        });
-
-        const form2 = formReq.form();
-        form2.append('file_upload', fs.createReadStream(file.path), {
-          filename: file.name,
-          contentType: file.type,
-        });
+    try {
+      if (!fs.existsSync(form.uploadDir)) {
+        fs.mkdirSync(form.uploadDir, { recursive: true });
+        console.log('Diretorio uploadedFiles criado!');
       }
-    });
+
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          console.log('some error', err);
+          res.status(500).send(err);
+        } else if (!files.formData) {
+          console.log('no file received');
+          res
+            .status(400)
+            .send({ success: false, message: 'Failed to receive file' });
+        } else {
+          const file = files.formData;
+          const url = `http://${device}/api/v1/file_asset`;
+          const formReq = request.post(url, (error, response, body) => {
+            if (error) {
+              console.log('Error!\n', error);
+              res
+                .status(500)
+                .send({
+                  success: false,
+                  message: 'Failed to sent file to device',
+                });
+            } else {
+              console.log('Path on Device:', body);
+              res.status(200).send({
+                success: true,
+                message: 'File sent',
+                path: body.replace(/"/g, ''),
+                mimetype: file.type.split('/')[0],
+              });
+            }
+          });
+
+          const form2 = formReq.form();
+          form2.append('file_upload', fs.createReadStream(file.path), {
+            filename: file.name,
+            contentType: file.type,
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ success: false, message: error });
+    }
   },
   // To update an asset in selected device
   async UpdateAsset(req, res) {
