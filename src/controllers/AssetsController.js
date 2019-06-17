@@ -147,7 +147,9 @@ module.exports = {
             res.status(500).send({ success: false, message: 'Failed to sent file to device' });
           } else {
             console.log('Path on Device:', body);
-            res.status(200).send({ success: true, message: 'File sent', path: body.replace(/"/g, '') });
+            res.status(200).send({
+              success: true, message: 'File sent', path: body.replace(/"/g, ''), mimetype: file.type.split('/')[0],
+            });
           }
         });
 
