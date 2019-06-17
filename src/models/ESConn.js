@@ -2,7 +2,7 @@ const elasticsearch = require('elasticsearch');
 
 const client = new elasticsearch.Client({
   host: process.env.ELASTIC_HOST || 'http://localhost:9200/',
-  log: process.env.LOG || 'info',
+  log: process.env.ELASTIC_LOG_LEVEL || 'info',
   maxRetries: 5,
   requestTimeout: 60000,
 });

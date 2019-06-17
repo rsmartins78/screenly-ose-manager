@@ -1,5 +1,6 @@
-const IncomingForm = require("formidable").IncomingForm;
-const request = require("request");
+const IncomingForm = require('formidable').IncomingForm;
+const request = require('request');
+const fs = require('fs');
 
 module.exports = {
   async GetAssetsByDevice(req, res) {
@@ -8,7 +9,7 @@ module.exports = {
     if (!device) {
       res.status(400).send({
         success: false,
-        message: "please inform device addess with ?device=value in request url"
+        message: 'please inform device addess with ?device=value in request url',
       });
     } else {
       const url = `http://${device}/api/v1.1/assets`;
@@ -17,18 +18,18 @@ module.exports = {
         {
           url,
           headers: {
-            "Content-Type": "application/json"
-          }
+            'Content-Type': 'application/json',
+          },
         },
         (error, response, body) => {
           if (error) {
             console.log(error);
             res.status(500).send(error);
           } else {
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).send(body);
           }
-        }
+        },
       );
     }
   },
@@ -40,7 +41,7 @@ module.exports = {
     if (!device) {
       res.status(400).send({
         success: false,
-        message: "please inform device addess with ?device=value in request url"
+        message: 'please inform device addess with ?device=value in request url',
       });
     } else {
       const url = `http://${device}/api/v1.1/assets/${assetId}`;
@@ -49,18 +50,18 @@ module.exports = {
         {
           url,
           headers: {
-            "Content-Type": "application/json"
-          }
+            'Content-Type': 'application/json',
+          },
         },
         (error, response, body) => {
           if (error) {
             console.log(error);
             res.status(500).send(error);
           } else {
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).send(body);
           }
-        }
+        },
       );
     }
   },
@@ -89,7 +90,7 @@ module.exports = {
       res.status(400).send({
         success: false,
         message:
-          "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+          'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
       const url = `http://${device}/api/v1.1/assets`;
@@ -98,20 +99,20 @@ module.exports = {
         {
           url,
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json',
           },
           body,
-          json: true
+          json: true,
         },
         (error, response, responseBody) => {
           if (error) {
             console.log(error);
             res.status(500).send(error);
           } else {
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).send(responseBody);
           }
-        }
+        },
       );
     }
   },
@@ -122,54 +123,41 @@ module.exports = {
       res.status(400).send({
         success: false,
         message:
-          "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+          'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     }
 
     const form = new IncomingForm();
-    form.uploadDir = "uploads";
+    form.uploadDir = 'public/uploads';
     form.keepExtensions = true;
 
     form.parse(req, (err, fields, files) => {
       if (err) {
-        console.log("some error", err);
-        res.send(500);
-      } else if (!files.file) {
-        console.log("no file received");
-        res.send(400);
+        console.log('some error', err);
+        res.status(500).send(err);
+      } else if (!files.formData) {
+        console.log('no file received');
+        res.status(400).send({ success: false, message: 'Failed to receive file' });
       } else {
-        const file = files.file;
-        console.log("saved file to", file.path);
-        console.log("original name", file.name);
-        console.log("type", file.type);
-        console.log("size", file.size);
-        res.send(200);
+        const file = files.formData;
+        const url = `http://${device}/api/v1/file_asset`;
+        const formReq = request.post(url, (error, response, body) => {
+          if (error) {
+            console.log('Error!\n', error);
+            res.status(500).send({ success: false, message: 'Failed to sent file to device' });
+          } else {
+            console.log('Path on Device:', body);
+            res.status(200).send({ success: true, message: 'File sent', path: body.replace(/"/g, '') });
+          }
+        });
+
+        const form2 = formReq.form();
+        form2.append('file_upload', fs.createReadStream(file.path), {
+          filename: file.name,
+          contentType: file.type,
+        });
       }
     });
-
-    // } else {
-    //   let url = "http://" + device + "/api/v1/file_asset";
-
-    //   request.post(
-    //     {
-    //       url: url,
-    //       headers: {
-    //         "Content-Type": "application/json"
-    //       },
-    //       body: body,
-    //       json: true
-    //     },
-    //     function(error, response, body) {
-    //       if (error) {
-    //         console.log(error);
-    //         res.status(500).send(error);
-    //       } else {
-    //         res.setHeader("Content-Type", "application/json");
-    //         res.status(200).send(body);
-    //       }
-    //     }
-    //   );
-    // }
   },
   // To update an asset in selected device
   async UpdateAsset(req, res) {
@@ -181,7 +169,7 @@ module.exports = {
       res.status(400).send({
         success: false,
         message:
-          "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+          'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
       const url = `http://${device}/api/v1.1/assets/${assetId}`;
@@ -190,20 +178,20 @@ module.exports = {
         {
           url,
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json',
           },
           body,
-          json: true
+          json: true,
         },
         (error, response, responseBody) => {
           if (error) {
             console.log(error);
             res.status(500).send(error);
           } else {
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).send(responseBody);
           }
-        }
+        },
       );
     }
   },
@@ -217,7 +205,7 @@ module.exports = {
       res.status(400).send({
         success: false,
         message:
-          "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+          'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
       const url = `http://${device}/api/v1.1/assets/${assetId}`;
@@ -226,10 +214,10 @@ module.exports = {
         {
           url,
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json',
           },
           body,
-          json: true
+          json: true,
         },
         (error, response, responseBody) => {
           if (error) {
@@ -239,13 +227,13 @@ module.exports = {
             console.log(responseBody.error);
             res.status(503).send(responseBody.error);
           } else {
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res
               .status(200)
-              .send({ success: true, message: "asset removed from device" });
+              .send({ success: true, message: 'asset removed from device' });
           }
-        }
+        },
       );
     }
-  }
+  },
 };
