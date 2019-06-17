@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan(`:remote-addr - :remote-user [:date[clf]] :method :url HTTP/:http-version :status :res[content-length] :response-time ms - :user-agent`));
 app.use(express.static('public'));
-app.use(appContext, require('./src/api.routes'));
+app.use(appContext, require('./src/routes/routes'));
 
 app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
