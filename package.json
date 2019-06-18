@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
     "request": "^2.88.0",
+    "semantic-ui": "^2.4.2",
     "swagger-jsdoc": "^3.2.9",
     "swagger-ui-express": "^4.0.5"
   },

@@ -1,12 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>App</title>
+    <title>Screenly OSE Manager</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="assets/js/semantic.min.js"></script>
 </head>
+
 <body>
-    <h1>Hello World</h1>
+    <section id="header">
+        <header class="container">
+            <h1 class="title ui header">OSE</h1>
+            <div id="header-menu" class="ui text menu">
+                <a class="hover item">
+                    <i class="github icon"></i>Github
+                </a>
+            </div>
+        </header>
+    </section>
+    <section id="login">
+        <div class="ui placeholder segment">
+            <div class="ui two column stackable center aligned grid">
+                <div class="ui vertical divider"></div>
+                <div class="middle aligned row">
+                    <div class="column">
+                        <div class="ui icon header login-text">
+                            <i class="desktop icon"></i>
+                            Uma solução Open Source para gerenciamento de Screenly Raspberrys
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="ui icon header">
+                            Faça login na ferramenta
+                        </div>
+                        <form class="ui form">
+                            <div class="fields">
+                                <div class="field">
+                                    <div class="ui left icon input">
+                                        <input type="text" placeholder="Username">
+                                        <i class="user icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="field">
+                                    <div class="ui left icon input">
+                                        <input type="password" placeholder="Password">
+                                        <i class="key icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="ui primary inverted button">
+                                Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="container">
+        <div class="ui tiny header">Screenly OSE Manager</div>
+        <p><i class="copyright outline icon"></i> DevOpsCore Indra Team</p>
+    </footer>
 </body>
+
 </html>
