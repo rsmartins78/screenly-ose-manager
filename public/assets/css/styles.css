@@ -81,3 +81,10 @@ footer {
     color: rgb(122, 122, 122);
     font-size: .9em;
 }
+
+#menubar {
+    height: 100%;
+    position: absolute;
+    margin: 0;
+    border-radius: 0;
+}
