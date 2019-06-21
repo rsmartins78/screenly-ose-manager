@@ -54,6 +54,10 @@ header {
         text-shadow: none;
     }
 
+#header-home header{
+    justify-content: flex-start;
+}
+
 #login {
     padding: 5% 15%;
     -webkit-font-smoothing: antialiased;
@@ -84,7 +88,15 @@ footer {
 
 #menubar {
     height: 100%;
-    position: absolute;
+    position: relative;
     margin: 0;
     border-radius: 0;
+    opacity: 1;
+    transition: all 0.2s cubic-bezier(0.12, 0.27, 0.24, 1.58);
+    left: 0;
+}
+
+#menubar.disabled {
+    opacity: 0;
+    left: -10em;
 }
