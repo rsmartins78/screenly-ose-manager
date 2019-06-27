@@ -7,13 +7,17 @@
 
 <body>
     <% include partials/sidemenu %>
-    <div class="pusher container">
-      <% include partials/menubar %>
-      <section id="header-home">
-          <header class="container">
-              <h1 class="title ui header">OSE</h1>
-          </header>
-      </section>
+    <div class="pusher ui grid">
+        <div class="one column">
+            <% include partials/menubar %>
+        </div>
+        <div class="content fifteen wide column">
+            <section id="header-home">
+                <header class="container">
+                    <h1 class="title ui header">OSE</h1>
+                </header>
+            </section>
+        </div>
     </div>
 </body>
 
