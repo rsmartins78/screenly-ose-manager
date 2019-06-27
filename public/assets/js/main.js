@@ -1,22 +1,13 @@
-var menu = document.getElementById("menubar");
+var data = {};
 
-function toggleMenu() {
-    var menu = document.getElementById("menubar");
 
-    if (menu.classList.contains('disabled')) {
-        menu.classList.remove('disabled');
-        $('.target').sidebar('hide');
-    } else {
-        menu.classList.add('disabled');
-        $('.target').sidebar('show');
-    }
+function loadDevices() {
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           data = JSON.parse(req.responseText);
+        }
+    };
+    req.open("get", "/api/v1/devices", true);
+    req.send();
 }
-
-if ($('.target').sidebar('is hidden')) {
-    menu.classList.remove('disabled');
-}
-
-if ($('.target').sidebar('is visible')) {
-    menu.classList.add('disabled');
-}
-

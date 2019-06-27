@@ -91,9 +91,14 @@ footer {
     font-size: .9em;
 }
 
+#sidemenu-section {
+    padding-bottom: 0 !important;
+}
+
 #menubar {
     height: 100%;
-    position: relative;
+    position: fixed;
+    width: 60px;
     margin: 0;
     border-radius: 0;
     opacity: 1;
@@ -101,7 +106,17 @@ footer {
     left: 0;
 }
 
-#menubar.disabled {
-    opacity: 0;
-    left: -10em;
+    #menubar.a {
+        transition: all .2s ease-in-out;
+    }
+
+    #menubar a:hover {
+        color: #57c5f0;
+    }
+
+.content {
+    margin-left: 100px;
+}
+
+#rasp-cards {
 }

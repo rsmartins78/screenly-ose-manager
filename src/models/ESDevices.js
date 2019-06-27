@@ -21,8 +21,8 @@ module.exports = {
           query: {
             match_all: {},
           },
-          from,
-          size,
+          // from,
+          // size,
         },
       },
     );

@@ -5,19 +5,49 @@
     <% include partials/head %>
 </head>
 
-<body>
-    <% include partials/sidemenu %>
-    <div class="pusher ui grid">
-        <div class="one column">
-            <% include partials/menubar %>
-        </div>
-        <div class="content fifteen wide column">
-            <section id="header-home">
-                <header class="container">
-                    <h1 class="title ui header">OSE</h1>
-                </header>
-            </section>
-        </div>
+<body onload="loadDevices()">
+    <div id="sidemenu-section">
+        <% include partials/menubar %>
+    </div>
+
+    <div class="content container">
+        <section id="header-home">
+            <header class="container">
+                <h1 class="title ui header">OSE</h1>
+            </header>
+        </section>
+        <section id="rasp-cards">
+            <div class="ui cards">
+                <% devices.hits.forEach(function(device) { %>
+                <div class="card">
+                    <div class="content">
+                        <a class="ui green right corner label">
+                            <i class="play icon"></i>
+                        </a>
+                        <img class="ui image"
+                            src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
+                        <div class="ui icon header">
+                            <i class="fab fa-raspberry-pi"></i>
+                            <%= device._source.device_name %>
+                        </div>
+                        <div class="meta">
+                            <p>Group: <%= device._source.device_group %></p>
+                            <p>Ip: <%= device._source.device_address %></p>
+                        </div>
+                        <div class="description">
+                            <%= device._source.device_type %>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui two buttons">
+                            <div class="ui basic green button">Config</div>
+                            <div class="ui basic red button">Delete</div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </section>
     </div>
 </body>
 
