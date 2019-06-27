@@ -3,6 +3,22 @@ const express = require('express');
 const routes = express.Router();
 const DevicesController = require('../controllers/DevicesController');
 const AssetsController = require('../controllers/AssetsController');
+const LoginController = require('../controllers/LoginController');
+const UsersController = require('../controllers/UsersController');
+
+const authMiddleware = require('../middlewares/auth');
+
+// Auth and Users
+routes.get('/login', authMiddleware, LoginController.checkSession);
+routes.post('/login', LoginController.login);
+
+routes.get('/users/:id', UsersController.getUserById);
+routes.put('/users', UsersController.updateUser);
+
+routes.get('/admin/users', authMiddleware, UsersController.getUsers); // Listar todos os usuários
+routes.post('/admin/users', authMiddleware, UsersController.createUser); // Cadastrar novo usuário
+routes.delete('/admin/users/:id', authMiddleware, UsersController.deleteUser);
+
 
 // To get devices
 routes.get('/devices', DevicesController.GetDevices);
