@@ -8,49 +8,103 @@ const client = new Client({
   requestTimeout: 60000
 });
 
-function checkFirstAdmin() {
-  client.search(
-    {
+client.cluster.health({}, function(err, health) {
+  console.log("\n-- ElasticSearch Health --\n", health, "\n -- End --\n");
+});
+
+async function getTime() {
+  var today = new Date();
+  var DD = today.getDate();
+  var MM = today.getMonth() + 1;
+  var YYYY = today.getFullYear();
+
+  var hh = today.getHours();
+  var mm = today.getMinutes();
+  var ss = today.getSeconds();
+
+  if (DD < 10) {
+    var DD = "0" + DD;
+  }
+  if (MM < 10) {
+    var MM = "0" + MM;
+  }
+  if (mm < 10) {
+    var mm = "0" + mm;
+  }
+  if (hh < 10) {
+    var hh = "0" + hh;
+  }
+  if (ss < 10) {
+    var ss = "0" + ss;
+  }
+  return (createdAt =
+    YYYY + "/" + MM + "/" + DD + " " + hh + ":" + mm + ":" + ss);
+}
+
+async function checkFirstAdmin() {
+  const passwd = await encryptData(process.env.ADMIN_PASS || "admin");
+  const search = await client.search({
+    index: "screenly-users",
+    type: "users",
+    body: {
+      query: {
+        match: {
+          group: "admin"
+        }
+      }
+    }
+  });
+  if (search && search.hits.total == 0) {
+    console.log("No one admins found, creating one.");
+    const time = await getTime();
+    const index = await client.index({
       index: "screenly-users",
       type: "users",
       body: {
-        query: {
-          match: {
-            group: "admin"
-          }
-        }
+        username: process.env.ADMIN_USER || "admin",
+        password: passwd,
+        group: "admin",
+        createdAt: time,
+        lastLoginAt: time
       }
-    },
-    (error, result, status) => {
-      if (result && result.hits.total == 0) {
-        console.log("No one admins found, creating one.");
-        const passwd = encryptData(process.env.ADMIN_PASS || "admin");
-        client.index(
-          {
-            index: "screenly-users",
-            type: "users",
-            body: {
-              username: process.env.ADMIN_USER || "admin",
-              password: passwd,
-              group: "admin",
-              createdAt: Date(),
-              lastLoginAt: Date()
-            }
-          },
-          function(error, result) {
-            if (!error && result.result == "created") {
-              console.log("New admin user created!");
-            }
-          }
-        );
-      }
+    });
+    if (index && index.result == "created") {
+      console.log("New admin user created!");
     }
-  );
+  }
 }
 
-client.cluster.health({}, function(err, health) {
-  console.log("-- Client Health --\n", health, "\n -- End --");
-});
+async function checkFirstDevice() {
+  const search = await client.search({
+    index: "screenly-users",
+    type: "users",
+    body: {
+      query: {
+        match_all: {}
+      }
+    }
+  });
+  if (search && search.hits.total == 0) {
+    console.log("No devices found, creating one.");
+    const time = await getTime();
+    const index = await client.index({
+      index: "screenly",
+      type: "raspberry",
+      body: {
+        device_name: "Dummy Device",
+        device_address: "127.0.0.1",
+        device_group: "group1",
+        createdAt: time,
+        lastCheckAt: time
+      }
+    });
+    if (index && index.result == "created") {
+      console.log("New dummy device created!");
+    }
+  }
+}
+
+
 
 // Check if screenly devices indice exists, if not, create it
 client.indices.exists({ index: "screenly" }, function(error, exists) {
@@ -58,21 +112,21 @@ client.indices.exists({ index: "screenly" }, function(error, exists) {
     throw new Error(error.message);
   }
   if (exists === false) {
-    console.log(result);
     client.indices.create(
       {
         index: "screenly"
       },
-      (exception, res) => {
+      (err, res) => {
         if (err) {
-          throw new Error(exception);
+          throw new Error(err);
         } else {
-          console.log(res);
+          checkFirstDevice();
           console.log("DB: Devices Structure OK");
         }
       }
     );
   } else {
+    checkFirstDevice();
     console.log("Devices Structure Ok");
   }
 });
