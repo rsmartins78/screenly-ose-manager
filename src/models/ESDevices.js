@@ -60,6 +60,7 @@ module.exports = {
   },
 
   async updateDevice(id, payload) {
+    const time = await getTime()
     const response = client.update(
       {
         index: 'screenly',
@@ -70,6 +71,10 @@ module.exports = {
             device_name: payload.device_name,
             device_group: payload.device_group,
             device_address: payload.device_address,
+            device_serial: payload.device_serial,
+            device_type: payload.device_type,
+            createdAt: time,
+            lastCheckAt: time
           },
         },
       },
