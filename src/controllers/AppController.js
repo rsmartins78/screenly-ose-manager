@@ -12,5 +12,8 @@ module.exports = {
   async Home(req, res) {
     const resp = await dbclient.listAllDevices();
     res.render('home', {page:'Home', menuId:'home', devices: resp.hits});
+  },
+  async Redirect(req, res) {
+      res.redirect('/home')
   }
 }

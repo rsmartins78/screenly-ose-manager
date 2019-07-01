@@ -116,3 +116,34 @@ function deleteDevice(device) {
         })
     }
 }
+
+function checkAuth() {
+    var token = localStorage.getItem("user-token");
+    return token;
+}
+
+function login() {
+    data = {}
+    data.password = $('[name=loginPass]').val();
+    data.username = $('[name=loginUser]').val();
+    if(data.password && data.username){
+        $.ajax({
+            type: "POST",
+            url: "/api/v1/login",
+            data: JSON.stringify(data),
+            dataType: "json",
+            headers: { "Content-Type": "application/json" },
+            // beforeSend: function () {
+                // form.addClass("loading")
+            // },
+            success: function (data, status) {
+                // form.removeClass("loading")
+                // $('#editModal').modal('hide');
+                console.log(data.response.responseText.token);
+
+            }
+        })
+    } else {
+        alert("Preenche essa merda")
+    }
+}

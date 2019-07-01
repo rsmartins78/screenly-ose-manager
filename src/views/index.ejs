@@ -11,6 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="assets/js/semantic.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </head>
 
 <body>
@@ -39,11 +40,11 @@
                         <div class="ui icon header">
                             Faça login na ferramenta
                         </div>
-                        <form action="/home" class="ui form">
+                        <form class="ui form">
                             <div class="fields">
                                 <div class="field">
                                     <div class="ui left icon input">
-                                        <input type="text" placeholder="Username">
+                                        <input name="loginUser" type="text" placeholder="Username">
                                         <i class="user icon"></i>
                                     </div>
                                 </div>
@@ -51,12 +52,12 @@
                             <div class="fields">
                                 <div class="field">
                                     <div class="ui left icon input">
-                                        <input type="password" placeholder="Password">
+                                        <input name="loginPass" type="password" placeholder="Password">
                                         <i class="key icon"></i>
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="ui primary inverted button">
+                            <button onclick="login()" class="ui primary inverted button">
                                 Login
                             </button>
                         </form>
