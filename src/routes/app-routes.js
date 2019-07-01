@@ -3,10 +3,14 @@ const express = require('express');
 const routes = express.Router();
 const AppController = require('../controllers/AppController');
 
+const authMiddleware = require('../middlewares/auth');
+
 // To get devices
 routes.get('/login', AppController.Login);
-routes.get('/', AppController.Home);
-routes.get('/home', AppController.Home);
+routes.get('/', (req, res) => {
+    res.redirect('/home')
+});
+routes.get('/home', authMiddleware, AppController.Home);
 // routes.get('home', AppController);
 
 
