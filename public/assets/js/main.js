@@ -24,7 +24,6 @@ function postDevice() {
     data.device_address = $('[name=device_address]').val()
     data.device_serial = $('[name=device_serial]').val()
     data.device_type = $('[name=device_type]').val()
-    console.log(data)
 
     if (!data.device_type) {
         data.device_type = "null"
