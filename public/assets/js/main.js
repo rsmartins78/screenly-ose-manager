@@ -39,7 +39,7 @@ function postDevice() {
         }, 2000);
     } else {
         $.ajax({
-            type: "PUT",
+            type: "POST",
             url: "/api/v1/devices",
             data: JSON.stringify(data),
             dataType: "json",

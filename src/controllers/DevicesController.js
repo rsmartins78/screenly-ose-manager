@@ -50,7 +50,7 @@ module.exports = {
         res.status(resp.statusCode).send(resp.response);
       }
     } else {
-      console.log('Body Empty');
+      console.log('Body Empty Or Incomplete');
       res.send(500);
     }
   },
