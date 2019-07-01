@@ -12,6 +12,7 @@ function editModal(device) {
     $('[name=Dynamic-device_address]').val(obj._source.device_address)
     $('[name=Dynamic-device_serial]').val(obj._source.device_serial)
     $('[name=Dynamic-device_type]').val(obj._source.device_type)
+    $('[name=Dynamic-device_id]').val(obj._id)
 }
 
 function postDevice() {
@@ -23,7 +24,7 @@ function postDevice() {
     data.device_address = $('[name=device_address]').val()
     data.device_serial = $('[name=device_serial]').val()
     data.device_type = $('[name=device_type]').val()
-
+    console.log(data)
 
     if (!data.device_type) {
         data.device_type = "null"
@@ -39,7 +40,7 @@ function postDevice() {
         }, 2000);
     } else {
         $.ajax({
-            type: "PUT",
+            type: "POST",
             url: "/api/v1/devices",
             data: JSON.stringify(data),
             dataType: "json",
@@ -67,6 +68,7 @@ function putDevice() {
     data.device_address = $('[name=Dynamic-device_address]').val()
     data.device_serial = $('[name=Dynamic-device_serial]').val()
     data.device_type = $('[name=Dynamic-device_type]').val()
+    data.id = $('[name=Dynamic-device_id]').val();
 
     if (!data.device_type) {
         data.device_type = "null"
