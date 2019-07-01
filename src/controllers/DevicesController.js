@@ -38,7 +38,6 @@ module.exports = {
   // To add devices
   async AddDevice(req, res) {
     const payload = req.body;
-    console.log(payload);
     if (payload.device_name && payload.device_group && payload.device_address) {
       const resp = await dbclient.addDevice(payload);
       if (resp.result === 'created') {
