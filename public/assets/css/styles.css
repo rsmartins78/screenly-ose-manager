@@ -104,6 +104,7 @@ footer {
     opacity: 1;
     transition: all 0.2s cubic-bezier(0.12, 0.27, 0.24, 1.58);
     left: 0;
+    z-index: 100;
 }
 
     #menubar.a {
@@ -114,9 +115,36 @@ footer {
         color: #57c5f0;
     }
 
-.content {
+.page-content {
     margin-left: 100px;
 }
 
-#rasp-cards {
+.addbutton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #57c5f0 !important;
+    color: #fff !important;
+    transition: all .5s cubic-bezier(0.55, -0.24, 0, 2.06) !important;
+}
+
+.addbutton:hover {
+    transform: translateY(5px);
+}
+
+.card {
+    margin-right: 15px !important;
+}
+
+.tip {
+    width: 10%;
+}
+
+#message {
+    position: absolute !important;
+    z-index: 9999 !important;
+    top: 0 !important;
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 0;
 }

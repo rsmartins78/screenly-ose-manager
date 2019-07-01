@@ -12,5 +12,5 @@ module.exports = {
   async Home(req, res) {
     const resp = await dbclient.listAllDevices();
     res.render('home', {page:'Home', menuId:'home', devices: resp.hits});
-  },
+  }
 }

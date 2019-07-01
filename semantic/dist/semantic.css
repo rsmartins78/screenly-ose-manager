@@ -9452,6 +9452,11 @@ i.icon.firefox:before {
   content: "\f269";
 }
 
+i.icon.raspberry:before {
+  content: "\f7bb";
+}
+
+
 i.icon.first.aid:before {
   content: "\f479";
 }

@@ -1,0 +1,64 @@
+<div id="message" class="ui icon hidden negative message">
+    <i class="times icon"></i>
+    <div class="content">
+        <div class="header">
+            Error
+        </div>
+        <p>
+            Invalid information, check the fields marked with '*'
+        </p>
+
+    </div>
+</div>
+<div id="addModal" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header icon">
+        <i class="fab fa-raspberry-pi"></i>
+        Add a Device
+    </div>
+    <div class="content">
+        <form id="add_device" name="add_device" class="ui form">
+            <h4 class="ui dividing header">Device Information</h4>
+            <div class="two fields">
+                <div class="field">
+                    <label>Name *</label>
+                    <div class="field">
+                        <input type="text" name="device_name" placeholder="Display name" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Serial</label>
+                    <div class="field">
+                        <input type="text" name="device_serial" placeholder="Serial Number">
+                    </div>
+                </div>
+            </div>
+            <div class="fields">
+                <div class="six wide field">
+                    <label>Group *</label>
+                    <div class="field"></div>
+                    <input type="text" name="device_group" placeholder="Device Group">
+                </div>
+                <div class="six wide field">
+                    <label>Address *</label>
+                    <div class="field"></div>
+                    <input type="text" name="device_address" placeholder="Device Address">
+                </div>
+                <div class="four wide field">
+                    <label>Model</label>
+                    <div class="field"></div>
+                    <input type="text" name="device_type" placeholder="Device model">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <button onclick="postDevice()" class="ui green right labeled icon button">
+            Save
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>

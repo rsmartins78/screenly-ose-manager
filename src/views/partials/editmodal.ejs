@@ -1,0 +1,51 @@
+<div id="editModal" class="ui modal">
+    <i class="close icon"></i>
+    <div id="dynamicHeader" class="header icon">
+        
+    </div>
+    <div class="content">
+        <form name="edit_device" class="ui form">
+            <h4 class="ui dividing header">RaspBerry Information</h4>
+            <div class="two fields">
+                <div class="field">
+                    <label>Name *</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-device_name" placeholder="Display name">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Serial</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-device_serial" placeholder="Serial Number">
+                    </div>
+                </div>
+            </div>
+            <div class="fields">
+                <div class="six wide field">
+                    <label>Group *</label>
+                    <div class="field"></div>
+                    <input type="text" name="Dynamic-device_group" placeholder="Device Group">
+                </div>
+                <div class="six wide field">
+                    <label>Address *</label>
+                    <div class="field"></div>
+                    <input type="text" name="Dynamic-device_address" placeholder="Device Address">
+                </div>
+                <div class="four wide field">
+                    <label>Model</label>
+                    <div class="field"></div>
+                    <input type="text" name="Dynamic-device_type" placeholder="Device model">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <button onclick="putDevice()" class="ui green right labeled icon button">
+            Save
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>

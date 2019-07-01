@@ -5,12 +5,12 @@
     <% include partials/head %>
 </head>
 
-<body onload="loadDevices()">
+<body>
     <div id="sidemenu-section">
         <% include partials/menubar %>
     </div>
 
-    <div class="content container">
+    <div class="page-content container">
         <section id="header-home">
             <header class="container">
                 <h1 class="title ui header">OSE</h1>
@@ -21,14 +21,16 @@
                 <% devices.hits.forEach(function(device) { %>
                 <div class="card">
                     <div class="content">
-                        <a class="ui green right corner label">
-                            <i class="play icon"></i>
-                        </a>
-                        <img class="ui image"
+                        <img class="ui fluid rounded centered image"
                             src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
                         <div class="ui icon header">
                             <i class="fab fa-raspberry-pi"></i>
                             <%= device._source.device_name %>
+                        </div>
+                        <div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
+                            <div class="ui green right ribbon label">
+                                <i class="play icon"></i>
+                            </div>
                         </div>
                         <div class="meta">
                             <p>Group: <%= device._source.device_group %></p>
@@ -40,15 +42,18 @@
                     </div>
                     <div class="extra content">
                         <div class="ui two buttons">
-                            <div class="ui basic green button">Config</div>
-                            <div class="ui basic red button">Delete</div>
+                            <div onclick="editModal('<%= JSON.stringify(device) %>')" class="ui basic green button">Edit</div>
+                            <div onclick="deleteDevice('<%= JSON.stringify(device) %>')" class="ui basic red button">Delete</div>
                         </div>
                     </div>
                 </div>
                 <% }); %>
             </div>
         </section>
+        <% include partials/addbutton %>
     </div>
+    <% include partials/addmodal %>
+    <% include partials/editmodal %>
 </body>
 
 </html>
