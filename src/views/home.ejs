@@ -5,7 +5,7 @@
     <% include partials/head %>
 </head>
 
-<body>
+<body onload="getAll()">
     <div id="sidemenu-section">
         <% include partials/menubar %>
     </div>
@@ -18,36 +18,7 @@
         </section>
         <section id="rasp-cards">
             <div class="ui cards">
-                <% devices.hits.forEach(function(device) { %>
-                <div class="card">
-                    <div class="content">
-                        <img class="ui fluid rounded centered image"
-                            src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
-                        <div class="ui icon header">
-                            <i class="fab fa-raspberry-pi"></i>
-                            <%= device._source.device_name %>
-                        </div>
-                        <div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
-                            <div class="ui green right ribbon label">
-                                <i class="play icon"></i>
-                            </div>
-                        </div>
-                        <div class="meta">
-                            <p>Group: <%= device._source.device_group %></p>
-                            <p>Ip: <%= device._source.device_address %></p>
-                        </div>
-                        <div class="description">
-                            <%= device._source.device_type %>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <div class="ui two buttons">
-                            <div onclick="editModal('<%= JSON.stringify(device) %>')" class="ui basic green button">Edit</div>
-                            <div onclick="deleteDevice('<%= JSON.stringify(device) %>')" class="ui basic red button">Delete</div>
-                        </div>
-                    </div>
-                </div>
-                <% }); %>
+
             </div>
         </section>
         <% include partials/addbutton %>
