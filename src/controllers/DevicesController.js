@@ -18,8 +18,6 @@ module.exports = {
       }
     }
 
-    console.log(query, from, size);
-
     if (query === undefined && from !== undefined && size !== undefined) {
       const resp = await dbclient.listAllDevices(from, size);
       sendResponse(resp);
