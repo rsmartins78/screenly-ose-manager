@@ -1,4 +1,4 @@
-const dbclient = require('../models/ESDevices');
+const dbclient = require("../models/ESDevices");
 
 module.exports = {
   async GetDevices(req, res) {
@@ -8,7 +8,7 @@ module.exports = {
 
     function sendResponse(value) {
       if (!value.status) {
-        const editedBody = { success: true, message: 'Records Loaded' };
+        const editedBody = { success: true, message: "Records Loaded" };
         Object.assign(value.hits, editedBody);
         res.send(value.hits);
       } else if (value.status === 404) {
@@ -29,22 +29,22 @@ module.exports = {
     } else {
       res.status(400).send({
         success: false,
-        message: 'Please define start and limit query',
+        message: "Please define start and limit query"
       });
     }
   },
   // To add devices
   async AddDevice(req, res) {
     const payload = req.body;
-    if (payload.device_name && payload.device_group && payload.device_address) {
+    if (payload !== undefined) {
       const resp = await dbclient.addDevice(payload);
-      if (resp.result === 'created') {
-        console.log('Success inserting data on DB');
-        res.setHeader('Content-Type', 'application/json');
+      if (resp.result === "created") {
+        console.log("Success inserting data on DB");
+        res.setHeader("Content-Type", "application/json");
         res.send(resp);
       } else {
-        console.log('Failed to insert data on DB');
-        res.setHeader('Content-Type', 'application/json');
+        console.log("Failed to insert data on DB");
+        res.setHeader("Content-Type", "application/json");
         res.status(resp.statusCode).send(resp.response);
       }
     } else {
@@ -58,28 +58,24 @@ module.exports = {
     const deviceId = req.body.id;
     delete req.body.id;
     const payload = req.body;
-    if (
-      deviceId
-      && payload.device_name
-      && payload.device_group
-      && payload.device_address
-    ) {
+    if (payload !== undefined) {
       try {
         const resp = await dbclient.updateDevice(deviceId, payload);
-        console.log(resp);
-
-        // res.send(resp)
-        if (resp.result === 'updated') {
-          console.log('Success updating data on DB');
-          res.setHeader('Content-Type', 'application/json');
-          res.status(200).send({ success: true, message: 'Device updated successfully' });
-        } else if (resp.result === 'noop') {
-          console.log('Device without alterations to update');
-          res.setHeader('Content-Type', 'application/json');
-          res.status(200).send({ success: true, message: 'Device already updated' });
+        if (resp.result === "updated") {
+          console.log("Success updating data on DB");
+          res.setHeader("Content-Type", "application/json");
+          res
+            .status(200)
+            .send({ success: true, message: "Device updated successfully" });
+        } else if (resp.result === "noop") {
+          console.log("Device without alterations to update");
+          res.setHeader("Content-Type", "application/json");
+          res
+            .status(200)
+            .send({ success: true, message: "Device already updated" });
         } else {
-          console.log('Failed to update data on DB');
-          res.setHeader('Content-Type', 'application/json');
+          console.log("Failed to update data on DB");
+          res.setHeader("Content-Type", "application/json");
           res.status(resp.statusCode).send(resp.response);
         }
       } catch (error) {
@@ -87,8 +83,8 @@ module.exports = {
         res.status(500).send(error);
       }
     } else {
-      console.log('Body Empty');
-      res.send(500);
+      console.log("Body Empty or Incomplete");
+      res.status(500).send({success: false, message: 'Body empty or incomplete.' });
     }
   },
   // To delete devices by ID
@@ -96,13 +92,13 @@ module.exports = {
     const deviceId = req.query.id;
     if (deviceId) {
       const resp = await dbclient.deleteDevice(deviceId);
-      if (resp.result === 'deleted') {
+      if (resp.result === "deleted") {
         res.send(resp);
       } else {
-        console.log('Error on delete', resp);
-        res.setHeader('Content-Type', 'application/json');
+        console.log("Error on delete", resp);
+        res.setHeader("Content-Type", "application/json");
         res.status(resp.statusCode).send(resp.response);
       }
     }
-  },
+  }
 };
