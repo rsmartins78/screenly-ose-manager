@@ -307,7 +307,10 @@ async function getAssets() {
             type: "GET",
             url: "/api/v1/assets/" + ip,
             async: false,
-            headers: {"Authorization": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password)},
+            headers: {
+                "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password),
+                "Authorization": "Bearer " + session.token
+            },
             success: function (data, status) {
                 console.log(data);
             }
