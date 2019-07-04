@@ -303,7 +303,15 @@ async function getAssets() {
         id = urlParams.get('id');
         $('table').tablesort()
         device = await getDevice(id, session.token);
-
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/assets/" + ip,
+            async: false,
+            headers: {"Authorization": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password)},
+            success: function (data, status) {
+                console.log(data);
+            }
+        })
     } else {
         table.addClass("content-hidden");
         message.removeClass("hidden");
