@@ -5,7 +5,7 @@
     <% include partials/head %>
 </head>
 
-<body id="body-home">
+<body id="body-home" onload="getAssets()">
     <div id="sidemenu-section">
         <% include partials/menubar %>
     </div>
@@ -21,6 +21,14 @@
             </header>
         </section>
         <section id="assets-table">
+            <div id="nodevices-message" class="ui icon error hidden message">
+                <i class="times icon"></i>
+                <div class="content">
+                    <div class="header">
+                        No devices
+                    </div>
+                </div>
+            </div>
             <table class="ui sortable teal celled table">
                 <thead>
                     <tr>
@@ -33,16 +41,21 @@
                     <tr>
                         <td>
                             <h4 class="ui image header">
-                                <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg" class="ui mini rounded image">
+                                <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg"
+                                    class="ui mini rounded image">
                                 <div class="content">
                                     RaspBerry Default Image
                                 </div>
                             </h4>
                         </td>
                         <td>Active</td>
-                        <td class="center aligned">
-                            <i class="delete link icon"></i>
-                            <i class="edit link icon"></i>
+                        <td class="center aligned action-group">
+                            <div class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
+                                <i class="large delete link icon"></i>
+                            </div>
+                            <div class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
+                                <i class="large edit link icon"></i>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

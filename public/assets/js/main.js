@@ -21,6 +21,21 @@ function editModal(id, name, address, group, type, serial) {
     $('[name=Dynamic-device_id]').val(obj.id)
 }
 
+async function getDevice(id, token) {
+    obj = {};
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/devices?id=" + id,
+        headers: { "Authorization": "Bearer " + token },
+        async: false,
+        success: function (data, status) {
+            obj = data;
+        }
+    })
+    return obj;
+}
+
+
 function getAll() {
     session = {};
     home = $('#body-home');
@@ -42,7 +57,7 @@ function getAll() {
                                 <div class="ui dimmer">
                                     <div class="content">
                                     <div class="center">
-                                        <a href="/manage_assets" class="ui inverted button">Manage Assets</a>
+                                        <a href="/manage_assets?ip=${obj._source.device_address}&id=${obj._id}" class="ui inverted button">Manage Assets</a>
                                     </div>
                                     </div>
                                 </div>
@@ -92,13 +107,22 @@ function postDevice() {
     data.device_address = $('[name=device_address]').val()
     data.device_serial = $('[name=device_serial]').val()
     data.device_type = $('[name=device_type]').val()
+    data.username = $('[name=device_username]').val()
+    data.password = $('[name=device_password]').val()
 
     if (!data.device_type) {
-        data.device_type = "null"
+        data.device_type = "null";
     }
     if (!data.device_serial) {
-        data.device_serial = "null"
+        data.device_serial = "null";
     }
+    if (!data.username) {
+        data.username = "null";
+    }
+    if (!data.password) {
+        data.password = "null";
+    }
+
 
     if (!data.device_address || !data.device_name || !data.device_group) {
         $('#message').closest('.message').transition('fade');
@@ -142,6 +166,8 @@ function putDevice() {
     data.device_address = $('[name=Dynamic-device_address]').val()
     data.device_serial = $('[name=Dynamic-device_serial]').val()
     data.device_type = $('[name=Dynamic-device_type]').val()
+    data.username = $('[name=Dynamic-device_username]').val()
+    data.password = $('[name=Dynamic-device_password]').val()
     data.id = $('[name=Dynamic-device_id]').val();
 
     if (!data.device_type) {
@@ -149,6 +175,12 @@ function putDevice() {
     }
     if (!data.device_serial) {
         data.device_serial = "null"
+    }
+    if (!data.username) {
+        data.username = "null";
+    }
+    if (!data.password) {
+        data.password = "null";
     }
 
     if (!data.device_address || !data.device_name || !data.device_group) {
@@ -257,5 +289,31 @@ function login() {
         })
     } else {
         alert("The fields cant be blank!")
+    }
+}
+
+async function getAssets() {
+    session = {};
+    session = checkAuth();
+    urlParams = new URLSearchParams(window.location.search);
+    table = $('#assets-table table');
+    message = $('#nodevices-message');
+    if (urlParams.has('ip') && urlParams.has('id')) {
+        ip = urlParams.get('ip');
+        id = urlParams.get('id');
+        $('table').tablesort()
+        device = await getDevice(id, session.token);
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/assets/" + ip,
+            async: false,
+            headers: {"Authorization": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password)},
+            success: function (data, status) {
+                console.log(data);
+            }
+        })
+    } else {
+        table.addClass("content-hidden");
+        message.removeClass("hidden");
     }
 }
