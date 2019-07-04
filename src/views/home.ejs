@@ -5,26 +5,26 @@
     <% include partials/head %>
 </head>
 
-<body onload="getAll()">
-    <div id="sidemenu-section">
-        <% include partials/menubar %>
-    </div>
-
-    <div class="page-content container">
-        <section id="header-home">
-            <header class="container">
-                <h1 class="title ui header">OSE</h1>
-            </header>
-        </section>
-        <section id="rasp-cards">
-            <div class="ui cards">
-
+<body id="body-home" class="auth-hidden" onload="getAll()">
+        <div id="sidemenu-section">
+                <% include partials/menubar %>
             </div>
-        </section>
-        <% include partials/addbutton %>
-    </div>
-    <% include partials/addmodal %>
-    <% include partials/editmodal %>
+        
+            <div class="page-content container">
+                <section id="header-home">
+                    <header class="container">
+                        <h1 class="title ui header">OSE</h1>
+                    </header>
+                </section>
+                <section id="rasp-cards">
+                    <div class="ui special cards">
+        
+                    </div>
+                </section>
+                <% include partials/addbutton %>
+            </div>
+            <% include partials/addmodal %>
+            <% include partials/editmodal %>
 </body>
 
 </html>

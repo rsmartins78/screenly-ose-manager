@@ -12,7 +12,7 @@ module.exports = {
         message: 'please inform device addess with ?device=value in request url',
       });
     } else {
-      const url = `http://${device}/api/v1.1/assets`;
+      const url = `http://${device}/api/v1.2/assets`;
 
       request.get(
         {
@@ -44,7 +44,7 @@ module.exports = {
         message: 'please inform device addess with ?device=value in request url',
       });
     } else {
-      const url = `http://${device}/api/v1.1/assets/${assetId}`;
+      const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
       request.get(
         {
@@ -93,7 +93,7 @@ module.exports = {
           'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
-      const url = `http://${device}/api/v1.1/assets`;
+      const url = `http://${device}/api/v1.2/assets`;
 
       request.post(
         {
@@ -194,7 +194,7 @@ module.exports = {
           'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
-      const url = `http://${device}/api/v1.1/assets/${assetId}`;
+      const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
       request.put(
         {
@@ -230,7 +230,7 @@ module.exports = {
           'please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080',
       });
     } else {
-      const url = `http://${device}/api/v1.1/assets/${assetId}`;
+      const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
       request.delete(
         {

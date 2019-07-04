@@ -49,7 +49,8 @@ module.exports = {
       }
     } else {
       console.log('Body Empty Or Incomplete');
-      res.send(500);
+      res.setHeader('Content-Type', 'application/json')
+      res.status(400).send({success: false, message: 'Body empty or incomplete, please verify! '});
     }
   },
   // To update devices

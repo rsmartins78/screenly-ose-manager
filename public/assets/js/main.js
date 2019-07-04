@@ -2,7 +2,6 @@ function bounceButton() {
     $('.icon.plus').transition('jiggle');
     $('#addModal').modal('show');
 }
-
 function editModal(id, name, address, group, type, serial) {
     obj = {};
     obj.name = name;
@@ -24,18 +23,31 @@ function editModal(id, name, address, group, type, serial) {
 
 function getAll() {
     session = {};
+    home = $('#body-home');
     session = checkAuth();
+    if (session.valid === true) {
+        home.removeClass("auth-hidden");
+    }
     container = $('.cards');
     $.ajax({
         type: "GET",
         url: "/api/v1/devices",
+        headers: { "Authorization": "Bearer " + session.token },
         success: function (data, status) {
             $.each(data.hits, function (index, obj) {
                 container.append(
                     `<div class="card">
                         <div class="content">
-                            <img class="ui fluid rounded centered image"
-                                src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
+                            <div id="image-blur" class="blurring dimmable image">
+                                <div class="ui dimmer">
+                                    <div class="content">
+                                    <div class="center">
+                                        <a href="/manage_assets" class="ui inverted button">Manage Assets</a>
+                                    </div>
+                                    </div>
+                                </div>
+                                <img class="ui fluid rounded centered image" src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
+                            </div>
                             <div class="ui icon header">
                                 <i class="fab fa-raspberry-pi"></i>
                                 "${obj._source.device_name}"
@@ -60,12 +72,18 @@ function getAll() {
                             </div>
                         </div>
                     </div>`
-                )});
+                )
+                $('#image-blur').dimmer({
+                    on: 'hover'
+                });
+            });
         }
     })
 }
 
 function postDevice() {
+    session = {};
+    session = checkAuth();
     form = $('[name=add_device]')
     data = {}
     message = $('#message')
@@ -93,7 +111,8 @@ function postDevice() {
             url: "/api/v1/devices",
             data: JSON.stringify(data),
             dataType: "json",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + session.token },
+
             beforeSend: function () {
                 form.addClass("loading")
             },
@@ -103,12 +122,18 @@ function postDevice() {
                 setTimeout(function () {
                     location.reload()
                 }, 1000)
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj.message);
+                $('.ui.modal').modal('hide');
             }
         })
     }
 }
 
 function putDevice() {
+    session = checkAuth();
     form = $('[name=edit_device]')
     data = {}
     message = $('#message')
@@ -137,7 +162,7 @@ function putDevice() {
             url: "/api/v1/devices",
             data: JSON.stringify(data),
             dataType: "json",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + session.token },
             beforeSend: function () {
                 form.addClass("loading")
             },
@@ -147,20 +172,33 @@ function putDevice() {
                 setTimeout(function () {
                     location.reload()
                 }, 1000)
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj.message);
+                $('.ui.modal').modal('hide');
             }
         })
     }
 }
 
 function deleteDevice(id, name) {
+    session = {};
     check = confirm('Are you sure to delete this device ?')
     if (check) {
+        session = checkAuth()
         $.ajax({
             type: "DELETE",
             url: "/api/v1/devices?id=" + id,
+            headers: { "Authorization": "Bearer " + session.token },
             success: function (data, status) {
-                alert("Device " + name + " deletado com sucesso")
+                alert("Device " + name + " has been deleted")
                 location.reload();
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj.message);
+                $('.ui.modal').modal('hide');
             }
         })
     }
@@ -170,35 +208,39 @@ function checkAuth() {
     var token = localStorage.getItem("user-token");
     var session = {}
     if (!token) {
-        console.log("nao tem");
-        session.valid = false
-        session.token = ""
+        session.valid = false;
+        session.token = undefined;
+        location.href = "/login"
     } else {
-        console.log("tem");
         session.token = token;
         $.ajax({
             type: "GET",
             url: "/api/v1/login",
+            headers: { "Authorization": "Bearer " + session.token },
+            async: false,
             success: function (data, status) {
-                console.log(data);
-                if (data.success) {
-                    session.valid = true;
-                } else {
-                    session.valid = true;
-                }
+                session.valid = true;
             },
-            failure: function (data, status) {
-                console.log("DATA: " + data + "Status: " + status);
+            error: function (data, status) {
+                session.valid = false;
+                delete session.token
+                location.href = "/login"
             }
         })
     }
-    return session;    
+    return session;
+}
+
+function logout() {
+    localStorage.removeItem('user-token');
+    location.href = '/login';
 }
 
 function login() {
     data = {}
     data.password = $('[name=loginPass]').val();
     data.username = $('[name=loginUser]').val();
+    token = "";
     if (data.password && data.username) {
         $.ajax({
             type: "POST",
@@ -206,17 +248,14 @@ function login() {
             data: JSON.stringify(data),
             dataType: "json",
             headers: { "Content-Type": "application/json" },
-            // beforeSend: function () {
-            // form.addClass("loading")
-            // },
             success: function (data, status) {
                 // form.removeClass("loading")
                 // $('#editModal').modal('hide');
-                console.log(data.token);
-                alert("LOGOU")
+                localStorage.setItem('user-token', data.token);
+                location.href = "/home";
             }
         })
     } else {
-        alert("Preenche essa merda")
+        alert("The fields cant be blank!")
     }
 }

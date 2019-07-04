@@ -21,23 +21,23 @@ routes.delete('/admin/users/:id', authMiddleware, UsersController.deleteUser);
 
 
 // To get devices
-routes.get('/devices', DevicesController.GetDevices);
+routes.get('/devices', authMiddleware, DevicesController.GetDevices);
 // To add devices
-routes.post('/devices', DevicesController.AddDevice);
+routes.post('/devices', authMiddleware, DevicesController.AddDevice);
 // To update devices
-routes.put('/devices', DevicesController.UpdateDevice);
+routes.put('/devices', authMiddleware, DevicesController.UpdateDevice);
 // To delete devices by ID
-routes.delete('/devices', DevicesController.DeleteDevice);
+routes.delete('/devices', authMiddleware, DevicesController.DeleteDevice);
 
 // To retrieve assets from selected device
-routes.get('/assets/:device', AssetsController.GetAssetsByDevice);
+routes.get('/assets/:device', authMiddleware, AssetsController.GetAssetsByDevice);
 // To retrieve the select asset from selected device
-routes.get('/assets/:device/:assetId', AssetsController.GetOneAsset);
-routes.post('/assets/:device', AssetsController.AddAssetToDevice);
-routes.post('/fileassets/:device', AssetsController.SendFileAsset);
+routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
+routes.post('/assets/:device', authMiddleware, AssetsController.AddAssetToDevice);
+routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
 // To update an asset in select device
-routes.put('/assets/:device/:assetId', AssetsController.UpdateAsset);
+routes.put('/assets/:device/:assetId', authMiddleware, AssetsController.UpdateAsset);
 // To delete an asset to selected device
-routes.delete('/assets/:device/:assetId', AssetsController.DeleteAsset);
+routes.delete('/assets/:device/:assetId', authMiddleware, AssetsController.DeleteAsset);
 
 module.exports = routes;
