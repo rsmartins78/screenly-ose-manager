@@ -5,7 +5,7 @@ const fs = require("fs");
 module.exports = {
   async GetAssetsByDevice(req, res) {
     const device = req.params.device;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
@@ -15,7 +15,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets`;
 
-      const postAssets = await request
+      const gettingAssets = await request
         .get({
           url,
           headers: {
@@ -25,18 +25,16 @@ module.exports = {
           timeout: 5000
         })
         .catch(response => {
-          if (response.statusCode !== 200) {
-            console.log("Error:", response.error, "on device", device);
-            res.status(500).send({
-              success: false,
-              message: response.error,
-              location: response.options.url
-            });
-          }
+          console.log("Error:", response.error, "on device", device);
+          res.status(500).send({
+            success: false,
+            message: response.error,
+            location: response.options.url
+          });
         });
-      if (postAssets !== undefined) {
+      if (gettingAssets !== undefined) {
         res.setHeader("Content-Type", "application/json");
-        res.status(200).send(postAssets);
+        res.status(200).send(gettingAssets);
       }
     }
   },
@@ -44,7 +42,7 @@ module.exports = {
   async GetOneAsset(req, res) {
     const device = req.params.device;
     const assetId = req.params.assetId;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
@@ -97,7 +95,7 @@ module.exports = {
   async AddAssetToDevice(req, res) {
     const device = req.params.device;
     const body = req.body;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
@@ -135,7 +133,7 @@ module.exports = {
   },
   async SendFileAsset(req, res) {
     const device = req.params.device;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
@@ -211,7 +209,7 @@ module.exports = {
     const device = req.params.device;
     const assetId = req.params.assetId;
     const body = req.body;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
@@ -251,7 +249,7 @@ module.exports = {
   async DeleteAsset(req, res) {
     const device = req.params.device;
     const assetId = req.params.assetId;
-    const authorization = req.headers.authorization;
+    const authorization = req.headers.deviceauth;
 
     if (!device) {
       res.status(400).send({
