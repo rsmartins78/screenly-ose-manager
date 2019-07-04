@@ -48,8 +48,9 @@ module.exports = {
         res.status(resp.statusCode).send(resp.response);
       }
     } else {
-      console.log("Body Empty Or Incomplete");
-      res.send(500);
+      console.log('Body Empty Or Incomplete');
+      res.setHeader('Content-Type', 'application/json')
+      res.status(400).send({success: false, message: 'Body empty or incomplete, please verify! '});
     }
   },
   // To update devices

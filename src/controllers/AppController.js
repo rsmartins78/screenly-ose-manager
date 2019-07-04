@@ -15,5 +15,8 @@ module.exports = {
   },
   async Redirect(req, res) {
       res.redirect('/home')
+  },
+  async Assets(req, res) {
+    res.render('assets', {page:'Assets', menuId:'assets'});
   }
 }
