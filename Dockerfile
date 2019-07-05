@@ -1,9 +1,9 @@
 FROM node:11.15
 
-ADD src/ /app/
+ADD src/ lib/ public/ scripts/ semantic/ tests/ index.js app.js package.json semantic.json yarn.lock /app/
 
 WORKDIR /app
 
 RUN npm install
 
-ENTRYPOINT [ "npm", "start", "prod" ]
+ENTRYPOINT [ "npm", "run", "start" ]
