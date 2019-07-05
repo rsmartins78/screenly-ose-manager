@@ -31,13 +31,15 @@ routes.delete('/devices', authMiddleware, DevicesController.DeleteDevice);
 
 // To retrieve assets from selected device
 routes.get('/assets/:device', authMiddleware, AssetsController.GetAssetsByDevice);
-// To retrieve the select asset from selected device
-routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
+// To send/create a new asset
 routes.post('/assets/:device', authMiddleware, AssetsController.AddAssetToDevice);
-routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
 // To update an asset in select device
 routes.put('/assets/:device/:assetId', authMiddleware, AssetsController.UpdateAsset);
 // To delete an asset to selected device
 routes.delete('/assets/:device/:assetId', authMiddleware, AssetsController.DeleteAsset);
+// To retrieve the select asset from selected device
+routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
+// To send a file and get the path and mimetype
+routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
 
 module.exports = routes;
