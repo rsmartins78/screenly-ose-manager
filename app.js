@@ -23,7 +23,7 @@ app.use(express.static('public'));
 app.use(apiContext, require('./src/routes/api-routes'));
 app.use(appContext, require('./src/routes/app-routes'));
 
-app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
