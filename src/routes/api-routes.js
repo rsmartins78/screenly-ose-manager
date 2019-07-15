@@ -31,10 +31,11 @@ routes.delete('/devices', authMiddleware, DevicesController.DeleteDevice);
 
 // To retrieve assets from selected device
 routes.get('/assets/:device', authMiddleware, AssetsController.GetAssetsByDevice);
-// To retrieve the select asset from selected device
-routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
 routes.post('/assets/:device', authMiddleware, AssetsController.AddAssetToDevice);
 routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
+
+// To retrieve the select asset from selected device
+routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
 // To update an asset in select device
 routes.put('/assets/:device/:assetId', authMiddleware, AssetsController.UpdateAsset);
 // To delete an asset to selected device

@@ -21,6 +21,23 @@ function editModal(id, name, address, group, type, serial) {
     $('[name=Dynamic-device_id]').val(obj.id)
 }
 
+function editAssetModal(asset) {
+    obj = asset;
+
+    $('#assetDynamicHeader').html('<i class="fab fa-raspberry-pi"></i> Edit Asset: ' + obj.name)
+    $('#editAssetModal').modal('show');
+    $('[name=Dynamic-asset_name]').val(obj.name)
+    $('[name=Dynamic-asset_type]').val(obj.mimetype)
+    $('[name=Dynamic-asset_duration]').val(obj.duration)
+    $('[name=Dynamic-asset_uri]').val(obj.uri)
+    $('[name=Dynamic-asset_start-date]').val(obj.start_date)
+    $('[name=Dynamic-asset_end-date]').val(obj.end_date)
+}
+
+function addAssetModal() {
+    $('#addAssetModal').modal('show');
+}
+
 async function getDevice(id, token) {
     obj = {};
     $.ajax({
@@ -56,12 +73,12 @@ function getAll() {
                             <div id="image-blur" class="blurring dimmable image">
                                 <div class="ui dimmer">
                                     <div class="content">
-                                    <div class="center">
-                                        <a href="/manage_assets?ip=${obj._source.device_address}&id=${obj._id}" class="ui inverted button">Manage Assets</a>
-                                    </div>
+                                        <div class="center">
+                                            <a href="/manage_assets?id=${obj._id}" class="ui inverted button">Manage Assets</a>
+                                        </div>
                                     </div>
                                 </div>
-                                <img class="ui fluid rounded centered image" src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg">
+                                <img class="ui fluid rounded centered image" src="/assets/screenlylogo.png">
                             </div>
                             <div class="ui icon header">
                                 <i class="fab fa-raspberry-pi"></i>
@@ -88,12 +105,85 @@ function getAll() {
                         </div>
                     </div>`
                 )
-                $('#image-blur').dimmer({
+                $('.blurring').dimmer({
                     on: 'hover'
                 });
             });
         }
     })
+}
+
+async function deleteAsset(id) {
+    session = {};
+    check = confirm('Are you sure to delete this asset ?')
+    if (check) {
+        session = checkAuth();
+        device = await getDevice(id, session.token);
+        ip = device.hits[0]._source.device_address;
+        $.ajax({
+            type: "DELETE",
+            url: "/api/v1/assets/" + ip + "/" + id,
+            headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
+            success: function (data, status) {
+                alert(data.message)
+            },
+            error: function (data, status) {
+                alert(data.message)
+            }
+        })
+    }
+}
+
+async function editAsset(id, device_id) {
+    session = {};
+    session = checkAuth();
+    device = await getDevice(device_id, session.token);
+    ip = device.hits[0]._source.device_address;
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/assets/" + ip + "/" + id,
+        headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
+        success: function (data, status) {
+            editAssetModal(data)
+        },
+        error: function (data, status) {
+            console.log(data)
+        }
+    })
+}
+
+async function addAsset() {
+    session = {};
+    session = checkAuth();
+    form = $('[name=add_asset]');
+    data = {};
+    message = $('#message');
+    data.play_order = 0;
+    data.name = $('[name=asset_name]').val();
+    data.mimetype = $('[name=asset_type]').val();
+    data.uri = $('[name=asset_uri]').val();
+    data.duration = $('[name=asset_duration]').val();
+    data.start_date = $('[name=asset_startdate]').val();
+    data.end_date = $('[name=asset_enddate]').val();
+    if ($('[name=asset_enabled]:checked').length != 0) {
+        data.is_enabled = 1;
+    } else {
+        data.is_enabled = 0;
+    }
+
+    if ($('[name=asset_skipcheck]:checked').length != 0) {
+        data.skip_asset_check = 1;
+    } else {
+        data.skip_asset_check = 0;
+    }
+
+    if ($('[name=asset_nocache]:checked').length != 0) {
+        data.nocache = 1;
+    } else {
+        data.nocache = 0;
+    }
+
+    console.log(data);
 }
 
 function postDevice() {
@@ -239,9 +329,11 @@ function deleteDevice(id, name) {
 function checkAuth() {
     var token = localStorage.getItem("user-token");
     var session = {}
+    var nextLocation = window.location.pathname + window.location.search;
     if (!token) {
         session.valid = false;
         session.token = undefined;
+        localStorage.setItem('next-location', nextLocation);
         location.href = "/login"
     } else {
         session.token = token;
@@ -255,8 +347,9 @@ function checkAuth() {
             },
             error: function (data, status) {
                 session.valid = false;
-                delete session.token
-                location.href = "/login"
+                delete session.token;
+                localStorage.setItem('next-location', nextLocation);
+                location.href = "/login";
             }
         })
     }
@@ -284,7 +377,13 @@ function login() {
                 // form.removeClass("loading")
                 // $('#editModal').modal('hide');
                 localStorage.setItem('user-token', data.token);
-                location.href = "/home";
+                if (localStorage.getItem('next-location')) {
+                    next = localStorage.getItem('next-location');
+                    localStorage.removeItem('next-location');
+                    location.href = next;
+                } else {
+                    location.href = "/home"
+                }
             }
         })
     } else {
@@ -294,15 +393,24 @@ function login() {
 
 async function getAssets() {
     session = {};
+    home = $('#body-home');
     session = checkAuth();
+    if (session.valid === true) {
+        home.removeClass("auth-hidden");
+    }
     urlParams = new URLSearchParams(window.location.search);
     table = $('#assets-table table');
     message = $('#nodevices-message');
-    if (urlParams.has('ip') && urlParams.has('id')) {
-        ip = urlParams.get('ip');
+    buttonContent = $('#addasset-button');
+    container = $('#table-container');
+    containerFoot = $('#foot-container');
+    header = $('header.container');
+    count = 0;
+    if (urlParams.has('id')) {
         id = urlParams.get('id');
         $('table').tablesort()
         device = await getDevice(id, session.token);
+        ip = device.hits[0]._source.device_address;
         $.ajax({
             type: "GET",
             url: "/api/v1/assets/" + ip,
@@ -312,7 +420,51 @@ async function getAssets() {
                 "Authorization": "Bearer " + session.token
             },
             success: function (data, status) {
-                console.log(data);
+                $.each(data, function (index, obj) {
+                    count = count + 1;
+                    container.append(
+                        `<tr>
+                            <td>
+                                <h4 class="ui image header">
+                                    <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg"
+                                        class="ui mini rounded image">
+                                    <div class="wrap-text content">
+                                       ${obj.name}
+                                    </div>
+                                </h4>
+                            </td>
+                            <td>${obj.mimetype}</td>
+                            <td>${obj.duration}s</td>
+                            <td>${obj.is_active == 1 ? `Active` : `Deactivated`}</td>
+                            <td class="center aligned action-group">
+                                <div onclick=deleteAsset('${obj.asset_id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
+                                    <i class="large delete link icon"></i>
+                                </div>
+                                <div onclick=editAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
+                                    <i class="large edit link icon"></i>
+                                </div>
+                            </td>
+                        </tr>`
+                    )
+                });
+                header.append(`<p class="">${device.hits[0]._source.device_name}</p>`)
+                buttonContent.append(`
+                    <div onclick="addAssetModal()" class="ui blue button">
+                        <i class="add icon"></i> Add Asset
+                    </div>
+                    <a class="ui basic left pointing blue label">
+                        ${count}
+                    </a>
+                    `)
+                containerFoot.append(
+                    `<tr>
+                        <th class="center aligned">${count} assets</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>`
+                )
             }
         })
     } else {

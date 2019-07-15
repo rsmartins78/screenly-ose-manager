@@ -6,7 +6,6 @@ module.exports = {
   async GetAssetsByDevice(req, res) {
     const device = req.params.device;
     const authorization = req.headers.deviceauth;
-
     if (!device) {
       res.status(400).send({
         success: false,
@@ -101,7 +100,7 @@ module.exports = {
       res.status(400).send({
         success: false,
         message:
-          "please inform device addess in request url, example: /api/v1/assets/10.10.10.10:8080"
+          "please inform device address in request url, example: /api/v1/assets/10.10.10.10:8080"
       });
     } else {
       const url = `http://${device}/api/v1.2/assets`;

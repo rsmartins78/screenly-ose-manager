@@ -1,0 +1,77 @@
+<div id="edit_message" class="ui icon hidden negative message">
+    <i class="times icon"></i>
+    <div class="content">
+        <div class="header">
+            Error
+        </div>
+        <p>
+            Invalid information, check the fields marked with '*'
+        </p>
+    </div>
+</div>
+<div id="editAssetModal" class="ui modal">
+    <i class="close icon"></i>
+    <div id="assetDynamicHeader" class="header icon">
+        <i class="fab fa-raspberry-pi"></i>
+        Edit Asset
+    </div>
+    <div class="content">
+        <form id="edit_asset" name="edit_asset" class="ui form">
+            <h4 class="ui dividing header">Asset Information</h4>
+            <div class="two fields">
+                <div class="field">
+                    <label>Name *</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-asset_name" placeholder="Asset Name" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Type *</label>
+                    <div class="field">
+                        <select name="Dynamic-asset_type" class="ui fluid dropdown">
+                            <option value="">Type</option>
+                            <option value="video">Video</option>
+                            <option value="image">Image</option>
+                            <option value="webpage">WebPage</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Uri *</label>
+                <div class="field">
+                    <input type="text" name="Dynamic-asset_uri" placeholder="Asset Uri" required>
+                </div>
+            </div>
+            <div class="three fields">
+                <div class="field">
+                    <label>Duration *</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-asset_duration" placeholder="Asset Duration" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Start *</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-asset_start-date" placeholder="Asset Start Date" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>End *</label>
+                    <div class="field">
+                        <input type="text" name="Dynamic-asset_end-date" placeholder="Asset End Date" required>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <button onclick="" class="ui green right labeled icon button">
+            Save
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>

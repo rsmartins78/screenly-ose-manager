@@ -44,9 +44,9 @@ module.exports = {
       type: "raspberry",
       body: {
         query: {
-          query_string: {
-            query,
-            default_operator: "AND"
+          match_phrase: {
+            _id: { query: query }
+            // default_operator: "AND"
           }
         },
         from,
@@ -55,6 +55,24 @@ module.exports = {
     });
     return response;
   },
+  
+  // async searchByQuery(query, from, size) {
+  //   const response = client.search({
+  //     index: "screenly",
+  //     type: "raspberry",
+  //     body: {
+  //       query: {
+  //         query_string: {
+  //           query: query,
+  //           default_operator: "AND"
+  //         }
+  //       },
+  //       from,
+  //       size
+  //     }
+  //   });
+  //   return response;
+  // },
 
   async updateDevice(id, payload) {
     const time = await getTime();

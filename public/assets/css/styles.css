@@ -75,10 +75,6 @@ header {
     color: rgb(87, 197, 240) !important;
 }
 
-    .ui.table {
-        width: 97%;
-    }
-
 #login {
     padding: 5% 15%;
     -webkit-font-smoothing: antialiased;
@@ -109,6 +105,11 @@ footer {
 
 #sidemenu-section {
     padding-bottom: 0 !important;
+}
+
+#addasset-button {
+    margin-right: 3%;
+    margin-bottom: 10px;
 }
 
 #menubar {
@@ -148,9 +149,23 @@ footer {
     transform: translateY(5px);
 }
 
+.wrap-text {
+    word-wrap: break-word !important;
+}
+
 .card {
     margin-right: 15px !important;
 }
+
+    .ui.basic.green.button:hover {
+        background-color: #21ba45 !important;
+        color: white !important;
+    }
+
+    .ui.basic.red.button:hover {
+        background-color: #db2828 !important;
+        color: white !important;
+    }
 
 .tip {
     width: 10%;
@@ -174,6 +189,10 @@ footer {
     justify-content: center;
 }
 
+.ui.table {
+    width: 97%;
+}
+
 .table-action {
     margin: 0 5px;
 }
@@ -189,6 +208,10 @@ footer {
 
 #body-home.auth-hidden {
     visibility: hidden;
+}
+
+#assets-table {
+    margin-bottom: 30px;
 }
 
 #assets-table table.content-hidden {

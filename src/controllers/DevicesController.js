@@ -2,10 +2,10 @@ const dbclient = require("../models/ESDevices");
 
 module.exports = {
   async GetDevices(req, res) {
-    const query = req.query.query;
+    const query = req.query.id;
+    // const query = '"_id": { "query": ' + req.query.id + '" }';
     const from = 0;
     const size = 10;
-
     function sendResponse(value) {
       if (!value.status) {
         const editedBody = { success: true, message: "Records Loaded" };
@@ -22,10 +22,10 @@ module.exports = {
       const resp = await dbclient.listAllDevices(from, size);
       sendResponse(resp);
       console.log(`New search without query at ${new Date()}`);
-    } else if (query && from && size) {
+    } else if (query) {
       const resp = await dbclient.searchByQuery(query, from, size);
       sendResponse(resp);
-      console.log(`New search with query ${query}at ${new Date()}`);
+      console.log(`New search with query ${query} at ${new Date()}`);
     } else {
       res.status(400).send({
         success: false,
