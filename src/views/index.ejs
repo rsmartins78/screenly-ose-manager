@@ -70,6 +70,12 @@
         <div class="ui tiny header">Screenly OSE Manager</div>
         <p><i class="copyright outline icon"></i> DevOpsCore Indra Team</p>
     </footer>
+    <script>
+        let token = localStorage.getItem("user-token");
+        if (token !== undefined){
+            location.href = "/home"
+        }
+    </script>
 </body>
 
 </html>

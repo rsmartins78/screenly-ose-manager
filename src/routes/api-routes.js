@@ -40,5 +40,9 @@ routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAs
 routes.put('/assets/:device/:assetId', authMiddleware, AssetsController.UpdateAsset);
 // To delete an asset to selected device
 routes.delete('/assets/:device/:assetId', authMiddleware, AssetsController.DeleteAsset);
+// To retrieve the select asset from selected device
+routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAsset);
+// To send a file and get the path and mimetype
+routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
 
 module.exports = routes;
