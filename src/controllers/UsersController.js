@@ -6,7 +6,7 @@ module.exports = {
     if (req.userData.group === 'admin') {
       const user = req.body.username;
       const password = req.body.password;
-      let group = req.body.group;
+      const group = req.body.group;
       if (!group) {
         group = 'users';
       }
