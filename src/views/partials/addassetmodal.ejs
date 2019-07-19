@@ -1,4 +1,4 @@
-<div id="message" class="ui icon hidden negative message">
+<div id="message" class="ui icon negative hidden message">
     <i class="times icon"></i>
     <div class="content">
         <div class="header">
@@ -18,71 +18,51 @@
     <div class="content">
         <form id="add_asset" name="add_asset" class="ui form">
             <h4 class="ui dividing header">Asset Information</h4>
-            <div class="two fields">
-                <div class="field">
+            <div class="three fields">
+                <div class="six wide field">
                     <label>Name *</label>
                     <div class="field">
                         <input type="text" name="asset_name" placeholder="Asset Name" required>
                     </div>
                 </div>
-                <div class="field">
-                    <label>Type *</label>
+                <div class="eight wide field">
+                    <label>Uri *</label>
                     <div class="field">
-                        <select name="asset_type" class="ui fluid dropdown">
-                            <option value="">Type</option>
-                            <option value="video">Video</option>
-                            <option value="image">Image</option>
-                            <option value="webpage">WebPage</option>
-                        </select>
+                        <input type="text" name="asset_uri" placeholder="Asset Url" required>
+                    </div>
+                </div>
+                <div class="two wide field">
+                    <label>Duration *</label>
+                    <div class="field">
+                        <input type="number" name="asset_duration" placeholder="Seconds" required>
                     </div>
                 </div>
             </div>
-            <div class="field">
-                <label>Uri *</label>
-                <div class="field">
-                    <input type="text" name="asset_uri" placeholder="Asset Uri" required>
-                </div>
-            </div>
             <div class="three fields">
-                <div class="field">
+                <div class="six wide field">
                     <div class="ui checkbox">
                         <input name="asset_enabled" type="checkbox" tabindex="0">
                         <label>Start enabled</label>
                     </div>
                 </div>
-                <div class="field">
+                <div class="eight wide field">
                     <div class="ui checkbox">
                         <input name="asset_skipcheck" type="checkbox" tabindex="0">
                         <label>Skip asset check</label>
                     </div>
                 </div>
-                <div class="field">
+                <div class="two wide field">
                     <div class="ui checkbox">
                         <input name="asset_nocache" type="checkbox" tabindex="0">
                         <label>No cache</label>
                     </div>
                 </div>
-
-            </div>
-            <div class="three fields">
-                <div class="field">
-                    <label>Duration *</label>
+                <!-- <div class="six wide field">
+                    <label>End date *</label>
                     <div class="field">
-                        <input type="text" name="asset_duration" placeholder="Asset Duration" required>
+                        <input type="date" name="asset_enddate" placeholder="End date" required>
                     </div>
-                </div>
-                <div class="field">
-                    <label>Start *</label>
-                    <div class="field">
-                        <input type="text" name="asset_startdate" placeholder="Asset Start Date" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>End *</label>
-                    <div class="field">
-                        <input type="text" name="asset_enddate" placeholder="Asset End Date" required>
-                    </div>
-                </div>
+                </div> -->
             </div>
         </form>
     </div>

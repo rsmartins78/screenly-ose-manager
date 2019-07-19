@@ -1,3 +1,47 @@
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+async function getTimeScreenly() {
+    var today = new Date();
+    var endDate = today.addDays(14);
+    var DD = today.getDate();
+    var DDEnd = endDate.getDate();
+    var MM = today.getMonth() + 1;
+    var MMEnd = endDate.getMonth() + 1;
+    var YYYY = today.getFullYear();
+    var YYYYEnd = endDate.getFullYear();
+    var data = {};
+
+    var hh = today.getHours();
+    var mm = today.getMinutes();
+    var ss = today.getSeconds();
+
+    if (DD < 10) {
+        var DD = "0" + DD;
+    }
+    if (MM < 10) {
+        var MM = "0" + MM;
+    }
+    if (mm < 10) {
+        var mm = "0" + mm;
+    }
+    if (hh < 10) {
+        var hh = "0" + hh;
+    }
+    if (ss < 10) {
+        var ss = "0" + ss;
+    }
+
+    createdAt = YYYY + "-" + MM + "-" + DD + "T" + hh + ":" + mm + ":" + ss + "Z";
+    endAt = YYYYEnd + "-" + MMEnd + "-" + DDEnd + "T" + hh + ":" + mm + ":" + ss + "Z";
+    data.created = createdAt;
+    data.end = endAt;
+    return data;
+}
+
 function bounceButton() {
     $('.icon.plus').transition('jiggle');
     $('#addModal').modal('show');
@@ -27,7 +71,6 @@ function editAssetModal(asset) {
     $('#assetDynamicHeader').html('<i class="fab fa-raspberry-pi"></i> Edit Asset: ' + obj.name)
     $('#editAssetModal').modal('show');
     $('[name=Dynamic-asset_name]').val(obj.name)
-    $('[name=Dynamic-asset_type]').val(obj.mimetype)
     $('[name=Dynamic-asset_duration]').val(obj.duration)
     $('[name=Dynamic-asset_uri]').val(obj.uri)
     $('[name=Dynamic-asset_start-date]').val(obj.start_date)
@@ -113,22 +156,23 @@ function getAll() {
     })
 }
 
-async function deleteAsset(id) {
+async function deleteAsset(id, device_id) {
     session = {};
     check = confirm('Are you sure to delete this asset ?')
     if (check) {
         session = checkAuth();
-        device = await getDevice(id, session.token);
+        device = await getDevice(device_id, session.token);
         ip = device.hits[0]._source.device_address;
         $.ajax({
             type: "DELETE",
             url: "/api/v1/assets/" + ip + "/" + id,
             headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
             success: function (data, status) {
-                alert(data.message)
+                alert(data.message);
             },
             error: function (data, status) {
-                alert(data.message)
+                alert(data.message);
+                location.reload();
             }
         })
     }
@@ -157,14 +201,19 @@ async function addAsset() {
     session = checkAuth();
     form = $('[name=add_asset]');
     data = {};
-    message = $('#message');
+    time = {};
+    message = $('#messageadd_asset');
     data.play_order = 0;
     data.name = $('[name=asset_name]').val();
-    data.mimetype = $('[name=asset_type]').val();
     data.uri = $('[name=asset_uri]').val();
     data.duration = $('[name=asset_duration]').val();
-    data.start_date = $('[name=asset_startdate]').val();
-    data.end_date = $('[name=asset_enddate]').val();
+    data.mimetype = "webpage"
+
+    time = await getTimeScreenly();
+
+    data.start_date = time.created;
+    data.end_date = time.end;
+
     if ($('[name=asset_enabled]:checked').length != 0) {
         data.is_enabled = 1;
     } else {
@@ -183,7 +232,110 @@ async function addAsset() {
         data.nocache = 0;
     }
 
-    console.log(data);
+    if (!data.name || !data.uri || !data.duration) {
+        message.closest('.message').transition('fade');
+        setTimeout(function () {
+            message.closest('.message').transition('fade')
+        }, 2000);
+    } else {
+        if (urlParams.has('id')) {
+            id = urlParams.get('id');
+            $('table').tablesort()
+            device = await getDevice(id, session.token);
+            ip = device.hits[0]._source.device_address;
+            username = device.hits[0]._source.username;
+            password = device.hits[0]._source.password;
+            $.ajax({
+                type: "POST",
+                url: "/api/v1/assets/" + ip,
+                data: JSON.stringify(data),
+                dataType: "json",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + session.token,
+                    "DeviceAuth": "Basic " + btoa(username + ':' + password)
+                },
+
+                beforeSend: function () {
+                    form.addClass("loading")
+                },
+                success: function (data, status) {
+                    form.removeClass("loading")
+                    $('.ui.modal').modal('hide');
+                    setTimeout(function () {
+                        location.reload()
+                    }, 1000)
+                },
+                error: function (data, status) {
+                    obj = JSON.parse(data.responseText);
+                    alert("An error occured, Status: " + obj);
+                    $('.ui.modal').modal('hide');
+                }
+            })
+        }
+    }
+}
+async function assetToggle(asset_id) {
+    el = $('#' + asset_id);
+    if (urlParams.has('id')) {
+        
+        device_id = urlParams.get('id');
+        device = await getDevice(device_id, session.token);
+        ip = device.hits[0]._source.device_address;
+        username = device.hits[0]._source.username;
+        password = device.hits[0]._source.password;
+        obj = {};
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/assets/" + ip + "/" + asset_id,
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "DeviceAuth": "Basic " + btoa(username + ':' + password)
+            },
+            async: false,
+            success: function (data, status) {
+                obj = data;
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.message);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+        if (obj.is_enabled == 1) {
+            obj.is_enabled = 0;
+        } else {
+            obj.is_enabled = 1;
+        }
+
+
+        delete obj.asset_id;
+        delete obj.is_processing;
+
+        console.log(obj);
+
+        $.ajax({
+            type: "PUT",
+            url: "/api/v1/assets/" + ip + "/" + asset_id,
+            data: JSON.stringify(obj),
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + session.token,
+                "DeviceAuth": "Basic " + btoa(username + ':' + password)
+            },
+            beforeSend: function () {
+                el.addClass("disabled");
+            },
+            success: function (data, status) {
+                el.prop("checked", !el.prop("checked"));
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.message);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+        el.removeClass("disabled");
+    }
 }
 
 function postDevice() {
@@ -348,6 +500,7 @@ function checkAuth() {
             error: function (data, status) {
                 session.valid = false;
                 delete session.token;
+                localStorage.removeItem("user-token");
                 localStorage.setItem('next-location', nextLocation);
                 location.href = "/login";
             }
@@ -435,9 +588,18 @@ async function getAssets() {
                             </td>
                             <td>${obj.mimetype}</td>
                             <td>${obj.duration}s</td>
-                            <td>${obj.is_active == 1 ? `Active` : `Deactivated`}</td>
+                            <td class="center aligned">
+                                ${obj.is_active == 1 ? 
+                                    `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
+                                        <input id="${obj.asset_id}" type="checkbox" checked="" tabindex="0" class="hidden">
+                                        <label></label>
+                                    </div>` : `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox">
+                                                    <input id="${obj.asset_id}" type="checkbox" tabindex="0" class="hidden">
+                                                    <label></label>
+                                                </div>`}
+                            </td>
                             <td class="center aligned action-group">
-                                <div onclick=deleteAsset('${obj.asset_id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
+                                <div onclick=deleteAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
                                     <i class="large delete link icon"></i>
                                 </div>
                                 <div onclick=editAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
