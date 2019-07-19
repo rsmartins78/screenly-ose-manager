@@ -650,7 +650,6 @@ async function getUsers() {
     buttonContent = $('#adduser-button');
     container = $('#table-container');
     containerFoot = $('#foot-container');
-    header = $('header.container');
     count = 0;
     $.ajax({
         type: "GET",
@@ -660,66 +659,110 @@ async function getUsers() {
             "Authorization": "Bearer " + session.token,
         },
         success: function (data, status) {
-            $.each(data, function (index, obj) {
-                console.log(obj);
-                //     count = count + 1;
-                //     container.append(
-                //         `<tr>
-                //                 <td>
-                //                     <h4 class="ui image header">
-                //                         <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg"
-                //                             class="ui mini rounded image">
-                //                         <div class="wrap-text content">
-                //                            ${obj.name}
-                //                         </div>
-                //                     </h4>
-                //                 </td>
-                //                 <td>${obj.mimetype}</td>
-                //                 <td>${obj.duration}s</td>
-                //                 <td class="center aligned">
-                //                     ${obj.is_active == 1 ?
-                //             `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
-                //                             <input id="${obj.asset_id}" type="checkbox" checked="" tabindex="0" class="hidden">
-                //                             <label></label>
-                //                         </div>` : `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox">
-                //                                         <input id="${obj.asset_id}" type="checkbox" tabindex="0" class="hidden">
-                //                                         <label></label>
-                //                                     </div>`}
-                //                 </td>
-                //                 <td class="center aligned action-group">
-                //                     <div onclick=deleteAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
-                //                         <i class="large delete link icon"></i>
-                //                     </div>
-                //                     <div onclick=editAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
-                //                         <i class="large edit link icon"></i>
-                //                     </div>
-                //                 </td>
-                //             </tr>`
-                //     )
-                // });
-                // header.append(`<p class="">${device.hits[0]._source.device_name}</p>`)
-                // buttonContent.append(`
-                //         <div onclick="addAssetModal()" class="ui blue button">
-                //             <i class="add icon"></i> Add Asset
-                //         </div>
-                //         <a class="ui basic left pointing blue label">
-                //             ${count}
-                //         </a>
-                //         `)
-                // containerFoot.append(
-                //     `<tr>
-                //             <th class="center aligned">${count} assets</th>
-                //             <th></th>
-                //             <th></th>
-                //             <th></th>
-                //             <th></th>
-                //         </tr>`
-                // )
-            })
-            // } else {
-            //     table.addClass("content-hidden");
-            //     message.removeClass("hidden");
-            // }
+            if (data.length > 0) {
+                $.each(data, function (index, obj) {
+                    count = count + 1;
+                    container.append(
+                        `<tr>
+                                <td>
+                                    <h4 class="ui image header">
+                                        <img src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png"
+                                            class="ui mini rounded image">
+                                        <div class="wrap-text content">
+                                           ${obj._source.username}
+                                        </div>
+                                    </h4>
+                                </td>
+                                <td>${obj._source.group}</td>
+                                <td class="center aligned">${obj._source.lastLoginAt}s</td>
+                                <td class="center aligned action-group">
+                                    <div onclick="" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
+                                        <i class="large delete link icon"></i>
+                                    </div>
+                                    <div onclick="" class="table-action" data-tooltip="Edit User" data-position="top center" data-variation="basic">
+                                        <i class="large edit link icon"></i>
+                                    </div>
+                                </td>
+                            </tr>`
+                    )
+                });
+                buttonContent.append(`
+                        <div onclick="addUserModal()" class="ui blue button">
+                            <i class="add icon"></i> Add User
+                        </div>
+                        <a class="ui basic left pointing blue label">
+                            ${count}
+                        </a>
+                        `)
+                containerFoot.append(
+                    `<tr>
+                            <th class="center aligned">${count} users</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>`
+                )
+            } else {
+                table.addClass("content-hidden");
+                message.removeClass("hidden");
+            }
         }
     })
+}
+
+function addUserModal() {
+    $('#addUserModal').modal('show');
+}
+
+function addUser() {
+    data = {}
+    data.username = $('[name=user_name]').val()
+    data.password = $('[name=user_password]').val()
+    conf_pass = $('[name=conf_password]').val()
+    data.group = $('[name=user_group]').val()
+    passmessage = $('#errorpassword')
+    form = $('[name=add_user]');
+
+
+    if (data.username && data.password && conf_pass && data.group) {
+        if ( data.password == conf_pass) {
+            $.ajax({
+                type: "POST",
+                url: "/api/v1/admin/users",
+                data: JSON.stringify(data),
+                dataType: "json",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + session.token,
+                },
+
+                beforeSend: function () {
+                    form.addClass("loading")
+                },
+                success: function (data, status) {
+                    form.removeClass("loading")
+                    $('.ui.modal').modal('hide');
+                    setTimeout(function () {
+                        location.reload()
+                    }, 1000)
+                },
+                error: function (data, status) {
+                    obj = JSON.parse(data.responseText);
+                    alert("An error occured, Status: " + obj);
+                    $('.ui.modal').modal('hide');
+                }
+            })
+        } else {
+            passmessage.closest('.message').transition('fade');
+            setTimeout(function () {
+                passmessage.closest('.message').transition('fade')
+            }, 2000);
+        }
+    } else {
+        $('#message').closest('.message').transition('fade');
+        setTimeout(function () {
+            $('#message').closest('.message').transition('fade')
+        }, 2000);
+    }
+    
 }
