@@ -2,10 +2,11 @@ const dbclient = require("../models/ESDevices");
 
 module.exports = {
   async GetDevices(req, res) {
+    const group = req.userData.group;
     const query = req.query.id;
     // const query = '"_id": { "query": ' + req.query.id + '" }';
     const from = 0;
-    const size = 10;
+    const size = 50;
     function sendResponse(value) {
       if (!value.status) {
         const editedBody = { success: true, message: "Records Loaded" };
@@ -18,12 +19,20 @@ module.exports = {
       }
     }
 
-    if (query === undefined && from !== undefined && size !== undefined) {
+    if (
+      query === undefined &&
+      from !== undefined &&
+      size !== undefined &&
+      group == "admin"
+    ) {
       const resp = await dbclient.listAllDevices(from, size);
       sendResponse(resp);
       console.log(`New search without query at ${new Date()}`);
-    } else if (query) {
-      const resp = await dbclient.searchByQuery(query, from, size);
+    } else if (query === undefined && from !== undefined && size !== undefined && group !== "admin") {
+      const resp = await dbclient.listAllPerGroup(group, from, size);
+      sendResponse(resp);
+    } else if (query && group != 'admin') {
+      const resp = await dbclient.searchByQuery(query, from, size, group);
       sendResponse(resp);
       console.log(`New search with query ${query} at ${new Date()}`);
     } else {
@@ -48,9 +57,12 @@ module.exports = {
         res.status(resp.statusCode).send(resp.response);
       }
     } else {
-      console.log('Body Empty Or Incomplete');
-      res.setHeader('Content-Type', 'application/json')
-      res.status(400).send({success: false, message: 'Body empty or incomplete, please verify! '});
+      console.log("Body Empty Or Incomplete");
+      res.setHeader("Content-Type", "application/json");
+      res.status(400).send({
+        success: false,
+        message: "Body empty or incomplete, please verify! "
+      });
     }
   },
   // To update devices
@@ -84,21 +96,33 @@ module.exports = {
       }
     } else {
       console.log("Body Empty or Incomplete");
-      res.status(500).send({success: false, message: 'Body empty or incomplete.' });
+      res
+        .status(500)
+        .send({ success: false, message: "Body empty or incomplete." });
     }
   },
   // To delete devices by ID
   async DeleteDevice(req, res) {
     const deviceId = req.query.id;
     if (deviceId) {
-      const resp = await dbclient.deleteDevice(deviceId);
-      if (resp.result === "deleted") {
-        res.send(resp);
-      } else {
-        console.log("Error on delete", resp);
-        res.setHeader("Content-Type", "application/json");
-        res.status(resp.statusCode).send(resp.response);
-      }
+      const resp = await dbclient
+        .deleteDevice(deviceId)
+        .then(function(resp) {
+          if (resp.result === "deleted") {
+            res.send(resp);
+          } else {
+            console.log("Error on delete", resp);
+            res.setHeader("Content-Type", "application/json");
+            res.status(resp.statusCode).send(resp.response);
+          }
+        })
+        .catch(function(resp) {
+          console.log("Error on delete", resp);
+          res.setHeader("Content-Type", "application/json");
+          res
+            .status(resp.statusCode)
+            .send({ success: false, message: resp.message });
+        });
     }
   }
 };

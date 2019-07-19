@@ -38,41 +38,76 @@ module.exports = {
     return response;
   },
 
-  async searchByQuery(query, from, size) {
-    const response = client.search({
+  async searchByQuery(query, from, size, group) {
+    // const response = client.search({
+    //   index: "screenly",
+    //   type: "raspberry",
+    //   body: {
+    //     query: {
+    //       match_phrase: {
+    //         _id: { query: query }
+    //         // default_operator: "AND"
+    //       }
+    //     },
+    //     from,
+    //     size
+    //   }
+    // });
+    // const response = await client.search({
+    //   index: "screenly-users",
+    //   type: "users",
+    //   body: {
+    //     query: {
+    //       bool: {
+    //         must: [
+    //           {
+    //             term: {
+    //               "group.keyword": query
+    //             }
+    //           }
+    //         ]
+    //       }
+    //     }
+    //   }
+    // });
+    const response = await client.search({
       index: "screenly",
       type: "raspberry",
       body: {
         query: {
-          match_phrase: {
-            _id: { query: query }
-            // default_operator: "AND"
+          query_string: {
+            query: query,
+            default_operator: "AND"
           }
         },
-        from,
-        size
+        from: from,
+        size: size,
+        filter: {
+          term: {
+            device_group: group
+          }
+        }
+      }
+    });
+
+
+
+    return response;
+  },
+  async listAllPerGroup(group, from, size) {
+    const response = await client.search({
+      index: "screenly",
+      type: "raspberry",
+      body: {
+        query: {
+          match: {
+            device_group: group
+          }
+        }
       }
     });
     return response;
   },
-  
-  // async searchByQuery(query, from, size) {
-  //   const response = client.search({
-  //     index: "screenly",
-  //     type: "raspberry",
-  //     body: {
-  //       query: {
-  //         query_string: {
-  //           query: query,
-  //           default_operator: "AND"
-  //         }
-  //       },
-  //       from,
-  //       size
-  //     }
-  //   });
-  //   return response;
-  // },
 
   async updateDevice(id, payload) {
     const time = await getTime();
