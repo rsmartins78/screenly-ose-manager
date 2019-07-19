@@ -185,6 +185,10 @@ footer {
     width: 97%;
 }
 
+#nousers-message {
+    width: 97%;
+}
+
 .action-group {
     display: flex;
     justify-content: center;

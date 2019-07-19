@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include partials/head %>
+</head>
+
+<body id="body-home" class="auth-hidden" onload="getUsers()">
+    <div id="sidemenu-section">
+        <% include partials/menubar %>
+    </div>
+
+    <div class="page-content container">
+        <section id="header-assets">
+            <header class="container">
+                <i id="assets-icon" class="huge icons">
+                    <i class="images icon"></i>
+                    <i class="corner inverted cog icon"></i>
+                </i>
+                <h1 class="title ui icon centered header">Users Manager</h1>
+            </header>
+        </section>
+        <section id="assets-table">
+            <div id="adduser-button" class="ui labeled right floated button" tabindex="0">
+                
+            </div>
+            <div id="nousers-message" class="ui icon error hidden message">
+                <i class="times icon"></i>
+                <div class="content">
+                    <div class="header">
+                        No Users
+                    </div>
+                </div>
+            </div>
+            <table class="ui sortable teal celled table">
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Type</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-container">
+
+                </tbody>
+                <tfoot id="foot-container">
+
+                </tfoot>
+            </table>
+        </section>
+    </div>
+</body>
+
+</html>

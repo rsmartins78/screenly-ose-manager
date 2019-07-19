@@ -41,6 +41,7 @@ module.exports = {
     }
   },
   async getUsers(req, res) {
+    console.log(req.userData);
     if (req.userData.group === 'admin') {
       const result = await elastic.getUsers();
       if (result.hits.total >= 1) {

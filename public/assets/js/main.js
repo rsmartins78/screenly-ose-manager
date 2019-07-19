@@ -278,7 +278,7 @@ async function addAsset() {
 async function assetToggle(asset_id) {
     el = $('#' + asset_id);
     if (urlParams.has('id')) {
-        
+
         device_id = urlParams.get('id');
         device = await getDevice(device_id, session.token);
         ip = device.hits[0]._source.device_address;
@@ -589,8 +589,8 @@ async function getAssets() {
                             <td>${obj.mimetype}</td>
                             <td>${obj.duration}s</td>
                             <td class="center aligned">
-                                ${obj.is_active == 1 ? 
-                                    `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
+                                ${obj.is_active == 1 ?
+                            `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
                                         <input id="${obj.asset_id}" type="checkbox" checked="" tabindex="0" class="hidden">
                                         <label></label>
                                     </div>` : `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox">
@@ -633,4 +633,93 @@ async function getAssets() {
         table.addClass("content-hidden");
         message.removeClass("hidden");
     }
+}
+
+// Users
+
+async function getUsers() {
+    session = {};
+    home = $('#body-home');
+    session = checkAuth();
+    if (session.valid === true) {
+        home.removeClass("auth-hidden");
+    }
+    urlParams = new URLSearchParams(window.location.search);
+    table = $('#assets-table table');
+    message = $('#nousers-message');
+    buttonContent = $('#adduser-button');
+    container = $('#table-container');
+    containerFoot = $('#foot-container');
+    header = $('header.container');
+    count = 0;
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/admin/users",
+        async: false,
+        headers: {
+            "Authorization": "Bearer " + session.token,
+        },
+        success: function (data, status) {
+            $.each(data, function (index, obj) {
+                console.log(obj);
+                //     count = count + 1;
+                //     container.append(
+                //         `<tr>
+                //                 <td>
+                //                     <h4 class="ui image header">
+                //                         <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg"
+                //                             class="ui mini rounded image">
+                //                         <div class="wrap-text content">
+                //                            ${obj.name}
+                //                         </div>
+                //                     </h4>
+                //                 </td>
+                //                 <td>${obj.mimetype}</td>
+                //                 <td>${obj.duration}s</td>
+                //                 <td class="center aligned">
+                //                     ${obj.is_active == 1 ?
+                //             `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
+                //                             <input id="${obj.asset_id}" type="checkbox" checked="" tabindex="0" class="hidden">
+                //                             <label></label>
+                //                         </div>` : `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox">
+                //                                         <input id="${obj.asset_id}" type="checkbox" tabindex="0" class="hidden">
+                //                                         <label></label>
+                //                                     </div>`}
+                //                 </td>
+                //                 <td class="center aligned action-group">
+                //                     <div onclick=deleteAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
+                //                         <i class="large delete link icon"></i>
+                //                     </div>
+                //                     <div onclick=editAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
+                //                         <i class="large edit link icon"></i>
+                //                     </div>
+                //                 </td>
+                //             </tr>`
+                //     )
+                // });
+                // header.append(`<p class="">${device.hits[0]._source.device_name}</p>`)
+                // buttonContent.append(`
+                //         <div onclick="addAssetModal()" class="ui blue button">
+                //             <i class="add icon"></i> Add Asset
+                //         </div>
+                //         <a class="ui basic left pointing blue label">
+                //             ${count}
+                //         </a>
+                //         `)
+                // containerFoot.append(
+                //     `<tr>
+                //             <th class="center aligned">${count} assets</th>
+                //             <th></th>
+                //             <th></th>
+                //             <th></th>
+                //             <th></th>
+                //         </tr>`
+                // )
+            })
+            // } else {
+            //     table.addClass("content-hidden");
+            //     message.removeClass("hidden");
+            // }
+        }
+    })
 }
