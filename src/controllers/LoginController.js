@@ -17,7 +17,7 @@ module.exports = {
         const group = result.hits.hits[0]._source.group;
         const token = await generateToken({ userId, user, group }); // Generating bearer token
         elastic.updateLoginAt(user);
-        res.send({ success: true, token, userId });
+        res.send({ success: true, token, userId, group });
       } else {
         res.status(403).send({ success: false, message: "incorrect password" });
       }

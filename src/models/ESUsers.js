@@ -25,13 +25,13 @@ module.exports = {
   },
   async createUser(user, password, group) {
     const time = await getTime();
-
+    const new_passwd = encryptData(password)
     const result = await client.index({
       index: "screenly-users",
       type: "users",
       body: {
         username: user,
-        password: encryptData(password),
+        password: new_passwd,
         group,
         createdAt: time,
         lastLoginAt: time
@@ -94,6 +94,7 @@ module.exports = {
       }
     });
     const userId = search.hits.hits[0]._id;
+    const new_passwd = await encryptData(password)
     const resultUpdate = await client.update({
       index: "screenly-users",
       type: "users",
@@ -101,7 +102,7 @@ module.exports = {
       body: {
         doc: {
           username: user,
-          password,
+          password: new_passwd,
           group: search.hits.hits[0]._source.group,
           createdAt: search.hits.hits[0]._source.createdAt,
           lastLoginAt: search.hits.hits[0]._source.lastLoginAt
