@@ -23,7 +23,7 @@ module.exports = {
     return response;
   },
 
-  async listAllDevices(from, size) {
+  async listAllDevices() {
     const response = client.search({
       index: "screenly",
       type: "raspberry",
@@ -31,45 +31,13 @@ module.exports = {
         query: {
           match_all: {}
         },
-        from,
-        size
+        sort: { "device_name.keyword": { order: "asc" } }
       }
     });
     return response;
   },
 
-  async searchByQuery(query, from, size, group) {
-    // const response = client.search({
-    //   index: "screenly",
-    //   type: "raspberry",
-    //   body: {
-    //     query: {
-    //       match_phrase: {
-    //         _id: { query: query }
-    //         // default_operator: "AND"
-    //       }
-    //     },
-    //     from,
-    //     size
-    //   }
-    // });
-    // const response = await client.search({
-    //   index: "screenly-users",
-    //   type: "users",
-    //   body: {
-    //     query: {
-    //       bool: {
-    //         must: [
-    //           {
-    //             term: {
-    //               "group.keyword": query
-    //             }
-    //           }
-    //         ]
-    //       }
-    //     }
-    //   }
-    // });
+  async searchByQuery(query, group) {
     const response = await client.search({
       index: "screenly",
       type: "raspberry",
@@ -80,21 +48,17 @@ module.exports = {
             default_operator: "AND"
           }
         },
-        from: from,
-        size: size,
+        sort: { device_name: { order: "asc" } },
         filter: {
           term: {
-            device_group: group
+            "device_name.keyword": group
           }
         }
       }
     });
-
-
-
     return response;
   },
-  async listAllPerGroup(group, from, size) {
+  async listAllPerGroup(group) {
     const response = await client.search({
       index: "screenly",
       type: "raspberry",
@@ -103,7 +67,8 @@ module.exports = {
           match: {
             device_group: group
           }
-        }
+        },
+        sort: { "device_name.keyword": { order: "asc" } }
       }
     });
     return response;

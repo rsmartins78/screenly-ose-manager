@@ -3,10 +3,7 @@ const dbclient = require("../models/ESDevices");
 module.exports = {
   async GetDevices(req, res) {
     const group = req.userData.group;
-    const query = req.query.id;
-    // const query = '"_id": { "query": ' + req.query.id + '" }';
-    const from = 0;
-    const size = 50;
+    const query = req.query.query;
     function sendResponse(value) {
       if (!value.status) {
         const editedBody = { success: true, message: "Records Loaded" };
@@ -18,21 +15,15 @@ module.exports = {
           .send({ success: false, message: JSON.parse(value.response) });
       }
     }
-
-    if (
-      query === undefined &&
-      from !== undefined &&
-      size !== undefined &&
-      group == "admin"
-    ) {
-      const resp = await dbclient.listAllDevices(from, size);
+    if (query === undefined && group == "admin") {
+      const resp = await dbclient.listAllDevices();
       sendResponse(resp);
       console.log(`New search without query at ${new Date()}`);
-    } else if (query === undefined && from !== undefined && size !== undefined && group !== "admin") {
-      const resp = await dbclient.listAllPerGroup(group, from, size);
+    } else if (query === undefined && group !== "admin") {
+      const resp = await dbclient.listAllPerGroup(group);
       sendResponse(resp);
-    } else if (query && group != 'admin') {
-      const resp = await dbclient.searchByQuery(query, from, size, group);
+    } else if (query && group !== "admin") {
+      const resp = await dbclient.searchByQuery(query, group);
       sendResponse(resp);
       console.log(`New search with query ${query} at ${new Date()}`);
     } else {

@@ -44,7 +44,7 @@
                             <div class="fields">
                                 <div class="field">
                                     <div class="ui left icon input">
-                                        <input name="loginUser" type="text" placeholder="Username">
+                                        <input id="loginUser" name="loginUser" type="text" placeholder="Username">
                                         <i class="user icon"></i>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                             <div class="fields">
                                 <div class="field">
                                     <div class="ui left icon input">
-                                        <input name="loginPass" type="password" placeholder="Password">
+                                        <input id="loginPass" name="loginPass" type="password" placeholder="Password">
                                         <i class="key icon"></i>
                                     </div>
                                 </div>
@@ -75,6 +75,16 @@
         if (token != undefined){
             location.href = "/home"
         }
+        $("#loginUser").on('keyup', function (e) {
+            if (e.keyCode == 13) { // 13 é o enter
+                login()
+            }
+        });
+        $("#loginPass").on('keyup', function (e) {
+            if (e.keyCode == 13) { // 13 é o enter
+                login()
+            }
+        });
     </script>
 </body>
 
