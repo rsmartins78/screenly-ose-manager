@@ -85,7 +85,7 @@ async function getDevice(id, token) {
     obj = {};
     $.ajax({
         type: "GET",
-        url: "/api/v1/devices?id=" + id,
+        url: "/api/v1/devices/" + id,
         headers: { "Authorization": "Bearer " + token },
         async: false,
         success: function (data, status) {

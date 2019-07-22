@@ -33,6 +33,19 @@ module.exports = {
       });
     }
   },
+  // To get one device by id
+  async GetOneDevice(req, res){
+    const id = req.params.id
+    const group = req.userData.group;
+    if (id != undefined){
+      const response = await dbclient.searchById(id,group);
+      if (response.hits.hits.total = 1){
+        res.send(response.hits);
+      } else {
+        res.status(404).send({success: false, message: 'no device found'})
+      }
+    }
+  },
   // To add devices
   async AddDevice(req, res) {
     const payload = req.body;

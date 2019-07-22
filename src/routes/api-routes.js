@@ -22,6 +22,8 @@ routes.delete('/admin/users/:id', authMiddleware, UsersController.deleteUser);
 
 // To get devices
 routes.get('/devices', authMiddleware, DevicesController.GetDevices);
+// To one device
+routes.get('/devices/:id', authMiddleware, DevicesController.GetOneDevice);
 // To add devices
 routes.post('/devices', authMiddleware, DevicesController.AddDevice);
 // To update devices
