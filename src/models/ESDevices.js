@@ -37,21 +37,14 @@ module.exports = {
     return response;
   },
 
-  async searchByQuery(query, group) {
+  async searchById(query, group) {
     const response = await client.search({
       index: "screenly",
       type: "raspberry",
       body: {
         query: {
-          query_string: {
-            query: query,
-            default_operator: "AND"
-          }
-        },
-        sort: { device_name: { order: "asc" } },
-        filter: {
-          term: {
-            "device_name.keyword": group
+          match: {
+            _id: query,
           }
         }
       }
