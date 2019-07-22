@@ -676,7 +676,7 @@ async function getUsers() {
                                 <td>${obj._source.group}</td>
                                 <td class="center aligned">${obj._source.lastLoginAt}s</td>
                                 <td class="center aligned action-group">
-                                    <div onclick="" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
+                                    <div onclick="deleteUser('${obj._id}')" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
                                         <i class="large delete link icon"></i>
                                     </div>
                                     <div onclick="" class="table-action" data-tooltip="Edit User" data-position="top center" data-variation="basic">
@@ -714,6 +714,27 @@ function addUserModal() {
     $('#addUserModal').modal('show');
 }
 
+function deleteUser(id) {
+    check = confirm('Are you sure to delete this user ?')
+    if (check) {
+        $.ajax({
+            type: "DELETE",
+            url: "/api/v1/admin/users/" + id,
+            headers: {
+                "Authorization": "Bearer " + session.token,
+            },
+            success: function (data, status) {
+                alert("User " + name + " has been deleted")
+                location.reload();
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+    }
+}
+
 function addUser() {
     data = {}
     data.username = $('[name=user_name]').val()
@@ -725,7 +746,7 @@ function addUser() {
 
 
     if (data.username && data.password && conf_pass && data.group) {
-        if ( data.password == conf_pass) {
+        if (data.password == conf_pass) {
             $.ajax({
                 type: "POST",
                 url: "/api/v1/admin/users",
@@ -764,5 +785,5 @@ function addUser() {
             $('#message').closest('.message').transition('fade')
         }, 2000);
     }
-    
+
 }
