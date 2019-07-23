@@ -15,64 +15,86 @@
         <i class="fab fa-raspberry-pi"></i>
         Add Asset
     </div>
-    <div class="content">
-        <form id="add_asset" name="add_asset" class="ui form">
-            <h4 class="ui dividing header">Asset Information</h4>
-            <div class="three fields">
-                <div class="six wide field">
-                    <label>Name *</label>
-                    <div class="field">
-                        <input type="text" name="asset_name" placeholder="Asset Name" required>
-                    </div>
-                </div>
-                <div class="eight wide field">
-                    <label>Uri *</label>
-                    <div class="field">
-                        <input type="text" name="asset_uri" placeholder="Asset Url" required>
-                    </div>
-                </div>
-                <div class="two wide field">
-                    <label>Duration *</label>
-                    <div class="field">
-                        <input type="number" name="asset_duration" placeholder="Seconds" required>
-                    </div>
-                </div>
-            </div>
-            <div class="three fields">
-                <div class="six wide field">
-                    <div class="ui checkbox">
-                        <input name="asset_enabled" type="checkbox" tabindex="0">
-                        <label>Start enabled</label>
-                    </div>
-                </div>
-                <div class="eight wide field">
-                    <div class="ui checkbox">
-                        <input name="asset_skipcheck" type="checkbox" tabindex="0">
-                        <label>Skip asset check</label>
-                    </div>
-                </div>
-                <div class="two wide field">
-                    <div class="ui checkbox">
-                        <input name="asset_nocache" type="checkbox" tabindex="0">
-                        <label>No cache</label>
-                    </div>
-                </div>
-                <!-- <div class="six wide field">
-                    <label>End date *</label>
-                    <div class="field">
-                        <input type="date" name="asset_enddate" placeholder="End date" required>
-                    </div>
-                </div> -->
-            </div>
-        </form>
+    <div class="ui top attached tabular menu">
+        <a class="item active" data-tab="uri">Url</a>
+        <a class="item" data-tab="file">File</a>
     </div>
-    <div class="actions">
-        <div class="ui black deny button">
-            Cancel
+    <div class="ui tab active" data-tab="uri">
+        <div class="content">
+            <form id="add_asset" name="add_asset" class="ui form">
+                <h4 class="ui dividing header">Asset Information</h4>
+                <div class="three fields">
+                    <div class="six wide field">
+                        <label>Name *</label>
+                        <div class="field">
+                            <input type="text" name="asset_name" placeholder="Asset Name" required>
+                        </div>
+                    </div>
+                    <div class="eight wide field">
+                        <label>Uri *</label>
+                        <div class="field">
+                            <input type="text" name="asset_uri" placeholder="Asset Url" required>
+                        </div>
+                    </div>
+                    <div class="two wide field">
+                        <label>Duration *</label>
+                        <div class="field">
+                            <input type="number" name="asset_duration" placeholder="Seconds" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="six wide field">
+                        <div class="ui checkbox">
+                            <input name="asset_enabled" type="checkbox" tabindex="0">
+                            <label>Start enabled</label>
+                        </div>
+                    </div>
+                    <div class="eight wide field">
+                        <div class="ui checkbox">
+                            <input name="asset_skipcheck" type="checkbox" tabindex="0">
+                            <label>Skip asset check</label>
+                        </div>
+                    </div>
+                    <div class="two wide field">
+                        <div class="ui checkbox">
+                            <input name="asset_nocache" type="checkbox" tabindex="0">
+                            <label>No cache</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        <button onclick="addAsset()" class="ui green right labeled icon button">
-            Save
-            <i class="checkmark icon"></i>
-        </button>
+        <div class="actions">
+            <div class="ui black deny button">
+                Cancel
+            </div>
+            <button onclick="addAsset()" class="ui green right labeled icon button">
+                Save
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
+    </div>
+    <div class="ui tab" data-tab="file">
+        <div class="content">
+            <form id="add_assetFile" name="add_asset" class="ui form">
+                <h4 class="ui dividing header">Asset Information</h4>
+                <div class="eighteen wide field">
+                    <label>URL *</label>
+                    <div class="field_margin field">
+                        <input id="asset_file" type="file" name="formData" placeholder="Asset File" required>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                Cancel
+            </div>
+            <button onclick="addFileAsset()" class="ui green right labeled icon button">
+                Save
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
     </div>
 </div>

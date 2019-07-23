@@ -130,6 +130,7 @@ module.exports = {
       }
     }
   },
+  
   async SendFileAsset(req, res) {
     const device = req.params.device;
     const authorization = req.headers.deviceauth;
@@ -167,7 +168,7 @@ module.exports = {
           const formReq = request.post(
             url,
             {
-              timeout: 5000,
+              timeout: 300000,
               headers: {
                 Authorization: authorization
               }
