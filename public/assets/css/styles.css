@@ -188,12 +188,30 @@ footer {
     margin-top: 0;
 }
 
+#errorlogin {
+    position: absolute !important;
+    z-index: 9999 !important;
+    top: 5% !important;
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 0;
+}
+
 #errorpassword {
     position: absolute !important;
     z-index: 9999 !important;
     top: 0 !important;
     width: 70%;
-    margin-left: 8%;
+    margin-left: 15%;
+    margin-top: 0;
+}
+
+#successpassword {
+    position: absolute !important;
+    z-index: 9999 !important;
+    top: 0 !important;
+    width: 70%;
+    margin-left: 15%;
     margin-top: 0;
 }
 
@@ -248,7 +266,15 @@ footer {
 }
 
 #logoutButton {
-    top: 70%;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#changePassButton {
+    position: absolute;
+    bottom: 7.4%;
+    width: 100%;
 }
 
 #image-blur {

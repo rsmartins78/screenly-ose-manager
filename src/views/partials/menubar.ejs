@@ -5,22 +5,25 @@
       </i>
     </a>
   </div>
-  <div data-inverted="" data-tooltip="Device groups" data-position="right center" data-variation="basic">
-    <a href="/home" class="item">
-      <i class="large th icon">
+  <div id="adminButtons">
+
+  </div>
+  <div onclick="changePassModal()" id="changePassButton" data-inverted="" data-tooltip="Change Password"
+    data-position="right center" data-variation="basic">
+    <a class="item">
+      <i class="large key icon">
       </i>
     </a>
   </div>
-  <div data-inverted="" data-tooltip="Manage users" data-position="right center" data-variation="basic">
-    <a href="/manage_users" class="item">
-      <i class="large users icon">
-      </i>
-    </a>
-  </div>
-  <div onclick="logout()" id="logoutButton" data-inverted="" data-tooltip="Logout" data-position="right center" data-variation="basic">
+  <div onclick="logout()" id="logoutButton" data-inverted="" data-tooltip="Logout" data-position="right center"
+    data-variation="basic">
     <a class="item">
       <i class="large sign-out icon">
       </i>
     </a>
   </div>
 </div>
+<script>
+    checkRole();
+</script>
+<% include changepassmodal %>

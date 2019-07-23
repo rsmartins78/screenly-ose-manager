@@ -11,7 +11,7 @@ module.exports = {
     // Validating if user exists on DB
     if (result && result.hits.total === 1) {
       const passwdFromDb = result.hits.hits[0]._source.password;
-      const checkPassword = compareData(password, passwdFromDb); // Checking password hash on database
+      const checkPassword = await compareData(password, passwdFromDb); // Checking password hash on database
       if (checkPassword) {
         const userId = result.hits.hits[0]._id;
         const group = result.hits.hits[0]._source.group;
@@ -23,7 +23,7 @@ module.exports = {
       }
     } else {
       console.log("Login Failed for user: %s\nUser found: %s", user, false);
-      res.status(403).send({ success: false, message: "username not found" });
+      res.status(404).send({ success: false, message: "username not found" });
     }
   },
   async checkSession(req, res) {

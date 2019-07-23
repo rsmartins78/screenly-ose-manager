@@ -1,0 +1,65 @@
+<div id="errorpassword" class="ui icon negative hidden message">
+    <i class="times icon"></i>
+    <div class="content">
+        <div class="header">
+            Error
+        </div>
+        <p>
+            The passwords dont match
+        </p>
+    </div>
+</div>
+<div id="successpassword" class="ui icon positive hidden message">
+    <i class="check icon"></i>
+    <div class="content">
+        <div class="header">
+            Sucess
+        </div>
+        <p>
+            The password has been successfuly changed.
+        </p>
+    </div>
+</div>
+<div id="changePasswordModal" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header icon">
+        <i class="users icon"></i>
+        Change your password
+    </div>
+    <div class="content">
+        <form id="change_password" name="change_password" class="ui form">
+            <input type="hidden" name="Dynamic-id" required>
+            <div class="two fields">
+                <div class="eight wide field">
+                    <label>Old Password *</label>
+                    <div class="field">
+                        <input type="password" name="Dynamic-old_pass" placeholder="Old Password" required>
+                    </div>
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="eight wide field">
+                    <label>New Password *</label>
+                    <div class="field">
+                        <input type="password" name="Dynamic-new_pass" placeholder="Password" required>
+                    </div>
+                </div>
+                <div class="eight wide field">
+                    <label>Confirm New Password *</label>
+                    <div class="field">
+                        <input type="password" name="Dynamic-new_confirm" placeholder="" required>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <button onclick="changePassword()" class="ui green right labeled icon button">
+            Save
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>

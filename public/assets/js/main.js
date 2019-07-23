@@ -301,6 +301,26 @@ function deleteDevice(id, name) {
     }
 }
 
+function checkRole () {
+    if (sessionStorage.getItem('group') == 'admin') {
+        $('#adminButtons').append(
+            `<div data-inverted="" data-tooltip="Device groups" data-position="right center" data-variation="basic">
+                <a href="/home" class="item">
+                    <i class="large th icon">
+                    </i>
+                </a>
+                </div>
+                <div data-inverted="" data-tooltip="Manage users" data-position="right center" data-variation="basic">
+                <a href="/manage_users" class="item">
+                    <i class="large users icon">
+                    </i>
+                </a>
+                </div>
+            </div>`
+        )
+    }
+}
+
 function checkAuth() {
     var token = localStorage.getItem("user-token");
     var session = {}
@@ -334,6 +354,8 @@ function checkAuth() {
 
 function logout() {
     localStorage.removeItem('user-token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('group');
     location.href = '/login';
 }
 
@@ -341,6 +363,7 @@ function login() {
     data = {}
     data.password = $('[name=loginPass]').val();
     data.username = $('[name=loginUser]').val();
+    errormessage = $('#errorlogin');
     token = "";
     if (data.password && data.username) {
         $.ajax({
@@ -350,9 +373,9 @@ function login() {
             dataType: "json",
             headers: { "Content-Type": "application/json" },
             success: function (data, status) {
-                // form.removeClass("loading")
-                // $('#editModal').modal('hide');
                 localStorage.setItem('user-token', data.token);
+                sessionStorage.setItem('user', data.user);
+                sessionStorage.setItem('group', data.group);
                 if (localStorage.getItem('next-location')) {
                     next = localStorage.getItem('next-location');
                     localStorage.removeItem('next-location');
@@ -360,10 +383,19 @@ function login() {
                 } else {
                     location.href = "/home"
                 }
+            },
+            error: function () {
+                errormessage.closest('.message').transition('fade');
+                setTimeout(function () {
+                    errormessage.closest('.message').transition('fade')
+                }, 2000);
             }
         })
     } else {
-        alert("The fields cant be blank!")
+        errormessage.closest('.message').transition('fade');
+        setTimeout(function () {
+            errormessage.closest('.message').transition('fade')
+        }, 2000);
     }
 }
 
@@ -870,13 +902,110 @@ function addUserModal() {
 
 function editUserModal(id, name, username, group) {
     $('#editUserModal').modal('show');
-    $('[name=Dynamic-id]').val(id)
-    $('[name=Dynamic-name_user]').val(name)
-    $('[name=Dynamic-user_name]').val(username)
-    $('[name=Dynamic-user_group]').val(group)
+    $('[name=Dynamic-id]').val(id);
+    $('[name=Dynamic-name_user]').val(name);
+    $('[name=Dynamic-user_name]').val(username);
+    $('[name=Dynamic-user_group]').val(group);
+}
+
+function changePassModal () {
+    $('#changePasswordModal').modal('show');
+}
+
+function changePassword () {
+    session = {};
+    session = checkAuth();
+    passmessage = $('#errorpassword');
+    successmessage = $('#successpassword');
+    form = $('#change_password');
+    data = {};
+
+    data.username = sessionStorage.getItem('user');
+    data.old_password = $('[name=Dynamic-old_pass]').val();
+    data.new_password = $('[name=Dynamic-new_pass]').val();
+    confirm = $('[name=Dynamic-new_confirm]').val();
+    if (data.new_password == confirm) {
+        $.ajax({
+            type: "PUT",
+            url: "/api/v1/users",
+            data: JSON.stringify(data),
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + session.token,
+            },
+
+            beforeSend: function () {
+                form.addClass("loading")
+            },
+            success: function (data, status) {
+                setTimeout(function () {
+                    form.removeClass("loading");
+                    $('.ui.modal').modal('hide');
+                    successmessage.closest('.message').transition('fade');
+                    setTimeout(function () {
+                        successmessage.closest('.message').transition('fade')
+                    }, 2000);
+                }, 1000)
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj);
+                $('.ui.modal').modal('hide');
+            }
+        })
+    } else {
+        passmessage.closest('.message').transition('fade');
+        setTimeout(function () {
+            passmessage.closest('.message').transition('fade')
+        }, 2000);
+    }
+}
+
+function editUser() {
+    session = {};
+    session = checkAuth();
+    form = $("#edit_user");
+
+    id = $('[name=Dynamic-id]').val();
+    data = {};
+    data.name = $('[name=Dynamic-name_user]').val();
+    data.username = $('[name=Dynamic-user_name]').val();
+    data.password = $('[name=Dynamic-user_password]').val();
+    data.group = $('[name=Dynamic-user_group]').val();
+
+    $.ajax({
+        type: "PUT",
+        url: "/api/v1/admin/users/" + id,
+        data: JSON.stringify(data),
+        dataType: "json",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.token,
+        },
+
+        beforeSend: function () {
+            form.addClass("loading")
+        },
+        success: function (data, status) {
+            setTimeout(function () {
+                form.removeClass("loading");
+                $('.ui.modal').modal('hide');
+                location.reload();
+            }, 1500)
+        },
+        error: function (data, status) {
+            obj = JSON.parse(data.responseText);
+            alert("An error occured, Status: " + obj);
+            $('.ui.modal').modal('hide');
+        }
+    })
 }
 
 function deleteUser(id) {
+    session = {};
+    session = checkAuth();
+
     check = confirm('Are you sure to delete this user ?')
     if (check) {
         $.ajax({
@@ -898,6 +1027,9 @@ function deleteUser(id) {
 }
 
 function addUser() {
+    session = {};
+    session = checkAuth();
+
     data = {}
     data.username = $('[name=user_name]').val()
     data.password = $('[name=user_password]').val()
