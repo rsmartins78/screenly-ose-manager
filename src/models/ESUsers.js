@@ -111,6 +111,67 @@ module.exports = {
     });
     return resultUpdate;
   },
+  async updateUserWithPassword(userId, {objUser}) {
+    const { name, username, group, password } = objUser
+    const search = await client.search({
+      index: "screenly-users",
+      type: "users",
+      body: {
+        query: {
+          match: {
+            _id: userId
+          }
+        }
+      }
+    });
+    const new_passwd = await encryptData(password);
+    const resultUpdate = await client.update({
+      index: "screenly-users",
+      type: "users",
+      id: userId,
+      body: {
+        doc: {
+          name: name,
+          username: username,
+          password: new_passwd,
+          group: group,
+          createdAt: search.hits.hits[0]._source.createdAt,
+          lastLoginAt: search.hits.hits[0]._source.lastLoginAt
+        }
+      }
+    });
+    return resultUpdate;
+  },
+  async updateUserWithoutPassword(userId, {objUser}) {
+    const { name, username, group } = objUser
+    const search = await client.search({
+      index: "screenly-users",
+      type: "users",
+      body: {
+        query: {
+          match: {
+            _id: userId
+          }
+        }
+      }
+    });
+    const resultUpdate = await client.update({
+      index: "screenly-users",
+      type: "users",
+      id: userId,
+      body: {
+        doc: {
+          name: name,
+          username: username,
+          password: search.hits.hits[0]._source.password,
+          group: group,
+          createdAt: search.hits.hits[0]._source.createdAt,
+          lastLoginAt: search.hits.hits[0]._source.lastLoginAt
+        }
+      }
+    });
+    return resultUpdate;
+  },
   async getUsers() {
     const result = await client.search({
       index: "screenly-users",

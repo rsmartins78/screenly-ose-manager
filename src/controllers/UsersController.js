@@ -1,37 +1,37 @@
-const elastic = require('../models/ESUsers');
-const { compareData } = require('../../lib/encrypt');
+const elastic = require("../models/ESUsers");
+const { compareData } = require("../../lib/encrypt");
 
 module.exports = {
   async createUser(req, res) {
-    if (req.userData.group === 'admin') {
+    if (req.userData.group === "admin") {
       const user = req.body.username;
       const password = req.body.password;
       const group = req.body.group;
       if (!group) {
-        group = 'users';
+        group = "users";
       }
       const result = await elastic.validateLogin(user);
       // Checking if user already exists on system
       if (result.hits.total !== 0) {
         res
           .status(400)
-          .send({ success: false, message: 'user already exists on system' });
+          .send({ success: false, message: "user already exists on system" });
       } else {
         const resultUser = await elastic.createUser(user, password, group);
         // Creating user on database
-        if (resultUser.result === 'created') {
-          console.log('Novo Usuário Criado: ', user);
+        if (resultUser.result === "created") {
+          console.log("Novo Usuário Criado: ", user);
           res.status(200).send({
             success: true,
-            message: 'user created with success',
+            message: "user created with success",
             username: user,
-            id: resultUser._id,
+            id: resultUser._id
           });
         } else {
-          console.log('Failed to create user\n', resultUser);
+          console.log("Failed to create user\n", resultUser);
           res
             .status(503)
-            .send({ success: false, message: 'Failed to create user' });
+            .send({ success: false, message: "Failed to create user" });
         }
       }
     } else {
@@ -41,8 +41,7 @@ module.exports = {
     }
   },
   async getUsers(req, res) {
-    console.log(req.userData);
-    if (req.userData.group === 'admin') {
+    if (req.userData.group === "admin") {
       const result = await elastic.getUsers();
       if (result.hits.total >= 1) {
         for (i in result.hits.hits) {
@@ -52,7 +51,7 @@ module.exports = {
       } else {
         res
           .status(404)
-          .send({ success: false, message: 'no users on database' });
+          .send({ success: false, message: "no users on database" });
       }
     } else {
       res
@@ -60,7 +59,7 @@ module.exports = {
         .send({ success: false, message: "you aren't allowed to do this" });
     }
   },
-  async updateUser(req, res) {
+  async updatePassword(req, res) {
     const reqUser = req.userData.user;
     const user = req.body.username;
     if (reqUser == user) {
@@ -69,34 +68,83 @@ module.exports = {
       const result = await elastic.validateLogin(user);
       // Validating if user exists on DB
       if (result.hits.total === 0) {
-        console.log('Login Failed for user: %s\nUser found: %s', user, false);
-        res.status(403).send({ success: false, message: 'username not found' });
+        res.status(403).send({ success: false, message: "username not found" });
       } else {
         const passwdFromDb = result.hits.hits[0]._source.password;
         const checkPassword = compareData(old_password, passwdFromDb); // Checking password hash on database
         if (checkPassword) {
-        //   const userId = result.hits.hits[0]._id;
+          //   const userId = result.hits.hits[0]._id;
           const updateReponse = await elastic.updateUserPassword(
             user,
-            new_password,
+            new_password
           );
-          if (updateReponse.result === 'updated') {
-            res.send({ success: true, message: 'password updated' });
+          if (
+            updateReponse.result === "updated" ||
+            updateReponse.result === "noop"
+          ) {
+            res.send({ success: true, message: "password updated" });
           } else {
             res
               .status(500)
-              .send({ success: true, message: 'password updated' });
+              .send({ success: true, message: "failed to update password" });
           }
         } else {
           res
             .status(403)
-            .send({ success: false, message: 'incorrect password' });
+            .send({ success: false, message: "incorrect password" });
         }
       }
     } else {
       res
         .status(403)
-        .send({ success: false, message: 'you are not allowed to do this' });
+        .send({ success: false, message: "you are not allowed to do this" });
+    }
+  },
+  async updateUser(req, res) {
+    if (req.userData.group === "admin") {
+      const objUser = {};
+      const userId = req.params.id;
+      const password = req.body.password;
+      objUser.name = req.body.name;
+      objUser.username = req.body.username;
+      objUser.group = req.body.group;
+
+      if (password != undefined) {
+        objUser.password = req.body.password;
+        const response = await elastic.updateUserWithPassword(userId, {
+          objUser
+        });
+        if (response.result === "updated" || response.result === "noop") {
+          res.send({ success: true, message: "user updated" });
+        } else {
+          res
+            .status(500)
+            .send({
+              success: true,
+              message: "failed to update update user",
+              code: 20
+            });
+        }
+      } else if (objUser.password == undefined) {
+        const response = await elastic.updateUserWithoutPassword(userId, {
+          objUser
+        });
+        if (response.result === "updated" || response.result === "noop") {
+          res.send({ success: true, message: "user updated" });
+        } else {
+          res
+            .status(500)
+            .send({
+              success: true,
+              message: "failed to update update user",
+              code: 30
+            });
+        }
+      }
+    } else {
+      res
+        .status(403)
+        .send({ success: false, message: "you are not allowed to do this" });
     }
   },
   async getUserById(req, res) {
@@ -108,17 +156,17 @@ module.exports = {
       }
       res.status(200).send(result.hits.hits[0]._source);
     } else {
-      res.status(404).send({ success: false, message: 'user not found' });
+      res.status(404).send({ success: false, message: "user not found" });
     }
   },
   async deleteUser(req, res) {
-    if (req.userData.group === 'admin') {
+    if (req.userData.group === "admin") {
       const userId = req.params.id;
       const result = await elastic.deleteUserById(userId);
       if (result && !result.status) {
         res.status(200).send({
           success: true,
-          message: `User ${userId} removed with success`,
+          message: `User ${userId} removed with success`
         });
       } else if (result && result.status === 404) {
         res
@@ -128,7 +176,7 @@ module.exports = {
     } else {
       res
         .status(403)
-        .send({ success: false, message: 'you are not allowed to do this' });
+        .send({ success: false, message: "you are not allowed to do this" });
     }
-  },
+  }
 };

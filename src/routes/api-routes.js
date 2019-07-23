@@ -13,10 +13,11 @@ routes.get('/login', authMiddleware, LoginController.checkSession);
 routes.post('/login', LoginController.login);
 
 routes.get('/users/:id', UsersController.getUserById);
-routes.put('/users', UsersController.updateUser);
+routes.put('/users', UsersController.updatePassword);
 
 routes.get('/admin/users', authMiddleware, UsersController.getUsers); // Listar todos os usuários
 routes.post('/admin/users', authMiddleware, UsersController.createUser); // Cadastrar novo usuário
+routes.put('/admin/users/:id', authMiddleware, UsersController.updateUser); // Cadastrar novo usuário
 routes.delete('/admin/users/:id', authMiddleware, UsersController.deleteUser);
 
 
@@ -48,3 +49,4 @@ routes.get('/assets/:device/:assetId', authMiddleware, AssetsController.GetOneAs
 routes.post('/fileassets/:device', authMiddleware, AssetsController.SendFileAsset);
 
 module.exports = routes;
+
