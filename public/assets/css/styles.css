@@ -210,6 +210,14 @@ footer {
     justify-content: center;
 }
 
+.tab {
+    margin: 3%;
+}
+
+.field_margin {
+    margin: 2% !important;
+}
+
 .ui.table {
     width: 97%;
 }

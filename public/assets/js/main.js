@@ -73,8 +73,11 @@ function editAssetModal(asset) {
     $('[name=Dynamic-asset_name]').val(obj.name)
     $('[name=Dynamic-asset_duration]').val(obj.duration)
     $('[name=Dynamic-asset_uri]').val(obj.uri)
+    $('[name=Dynamic-asset_type]').val(obj.mimetype)
     $('[name=Dynamic-asset_start-date]').val(obj.start_date)
     $('[name=Dynamic-asset_end-date]').val(obj.end_date)
+    $('[name=Dynamic-asset_id]').val(obj.asset_id);
+    $('[name=Dynamic-asset_enabled]').val(obj.is_enabled);
 }
 
 function addAssetModal() {
@@ -156,187 +159,7 @@ function getAll() {
     })
 }
 
-async function deleteAsset(id, device_id) {
-    session = {};
-    check = confirm('Are you sure to delete this asset ?')
-    if (check) {
-        session = checkAuth();
-        device = await getDevice(device_id, session.token);
-        ip = device.hits[0]._source.device_address;
-        $.ajax({
-            type: "DELETE",
-            url: "/api/v1/assets/" + ip + "/" + id,
-            headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
-            success: function (data, status) {
-                alert(data.message);
-            },
-            error: function (data, status) {
-                alert(data.message);
-                location.reload();
-            }
-        })
-    }
-}
 
-async function editAsset(id, device_id) {
-    session = {};
-    session = checkAuth();
-    device = await getDevice(device_id, session.token);
-    ip = device.hits[0]._source.device_address;
-    $.ajax({
-        type: "GET",
-        url: "/api/v1/assets/" + ip + "/" + id,
-        headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
-        success: function (data, status) {
-            editAssetModal(data)
-        },
-        error: function (data, status) {
-            console.log(data)
-        }
-    })
-}
-
-async function addAsset() {
-    session = {};
-    session = checkAuth();
-    form = $('[name=add_asset]');
-    data = {};
-    time = {};
-    message = $('#messageadd_asset');
-    data.play_order = 0;
-    data.name = $('[name=asset_name]').val();
-    data.uri = $('[name=asset_uri]').val();
-    data.duration = $('[name=asset_duration]').val();
-    data.mimetype = "webpage"
-
-    time = await getTimeScreenly();
-
-    data.start_date = time.created;
-    data.end_date = time.end;
-
-    if ($('[name=asset_enabled]:checked').length != 0) {
-        data.is_enabled = 1;
-    } else {
-        data.is_enabled = 0;
-    }
-
-    if ($('[name=asset_skipcheck]:checked').length != 0) {
-        data.skip_asset_check = 1;
-    } else {
-        data.skip_asset_check = 0;
-    }
-
-    if ($('[name=asset_nocache]:checked').length != 0) {
-        data.nocache = 1;
-    } else {
-        data.nocache = 0;
-    }
-
-    if (!data.name || !data.uri || !data.duration) {
-        message.closest('.message').transition('fade');
-        setTimeout(function () {
-            message.closest('.message').transition('fade')
-        }, 2000);
-    } else {
-        if (urlParams.has('id')) {
-            id = urlParams.get('id');
-            $('table').tablesort()
-            device = await getDevice(id, session.token);
-            ip = device.hits[0]._source.device_address;
-            username = device.hits[0]._source.username;
-            password = device.hits[0]._source.password;
-            $.ajax({
-                type: "POST",
-                url: "/api/v1/assets/" + ip,
-                data: JSON.stringify(data),
-                dataType: "json",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + session.token,
-                    "DeviceAuth": "Basic " + btoa(username + ':' + password)
-                },
-
-                beforeSend: function () {
-                    form.addClass("loading")
-                },
-                success: function (data, status) {
-                    form.removeClass("loading")
-                    $('.ui.modal').modal('hide');
-                    setTimeout(function () {
-                        location.reload()
-                    }, 1000)
-                },
-                error: function (data, status) {
-                    obj = JSON.parse(data.responseText);
-                    alert("An error occured, Status: " + obj);
-                    $('.ui.modal').modal('hide');
-                }
-            })
-        }
-    }
-}
-async function assetToggle(asset_id) {
-    el = $('#' + asset_id);
-    if (urlParams.has('id')) {
-
-        device_id = urlParams.get('id');
-        device = await getDevice(device_id, session.token);
-        ip = device.hits[0]._source.device_address;
-        username = device.hits[0]._source.username;
-        password = device.hits[0]._source.password;
-        obj = {};
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/assets/" + ip + "/" + asset_id,
-            headers: {
-                "Authorization": "Bearer " + session.token,
-                "DeviceAuth": "Basic " + btoa(username + ':' + password)
-            },
-            async: false,
-            success: function (data, status) {
-                obj = data;
-            },
-            error: function (data, status) {
-                obj = JSON.parse(data.message);
-                alert("An error occured, Status: " + obj);
-            }
-        })
-        if (obj.is_enabled == 1) {
-            obj.is_enabled = 0;
-        } else {
-            obj.is_enabled = 1;
-        }
-
-
-        delete obj.asset_id;
-        delete obj.is_processing;
-
-        console.log(obj);
-
-        $.ajax({
-            type: "PUT",
-            url: "/api/v1/assets/" + ip + "/" + asset_id,
-            data: JSON.stringify(obj),
-            dataType: "json",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + session.token,
-                "DeviceAuth": "Basic " + btoa(username + ':' + password)
-            },
-            beforeSend: function () {
-                el.addClass("disabled");
-            },
-            success: function (data, status) {
-                el.prop("checked", !el.prop("checked"));
-            },
-            error: function (data, status) {
-                obj = JSON.parse(data.message);
-                alert("An error occured, Status: " + obj);
-            }
-        })
-        el.removeClass("disabled");
-    }
-}
 
 function postDevice() {
     session = {};
@@ -544,6 +367,8 @@ function login() {
     }
 }
 
+// Assets
+
 async function getAssets() {
     session = {};
     home = $('#body-home');
@@ -633,6 +458,333 @@ async function getAssets() {
         table.addClass("content-hidden");
         message.removeClass("hidden");
     }
+
+    // Ativa tab de menu da modal de addasset
+    $('.menu .item').tab();
+}
+
+async function deleteAsset(id, device_id) {
+    session = {};
+    check = confirm('Are you sure to delete this asset ?')
+    if (check) {
+        session = checkAuth();
+        device = await getDevice(device_id, session.token);
+        ip = device.hits[0]._source.device_address;
+        $.ajax({
+            type: "DELETE",
+            url: "/api/v1/assets/" + ip + "/" + id,
+            headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
+            success: function (data, status) {
+                alert(data.message);
+            },
+            error: function (data, status) {
+                alert(data.message);
+                location.reload();
+            }
+        })
+    }
+}
+
+async function editAsset(id, device_id) {
+    session = {};
+    session = checkAuth();
+    device = await getDevice(device_id, session.token);
+    ip = device.hits[0]._source.device_address;
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/assets/" + ip + "/" + id,
+        headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
+        success: function (data, status) {
+            editAssetModal(data)
+        },
+        error: function (data, status) {
+            console.log(data)
+        }
+    })
+}
+
+async function sendEditedAsset(asset_id) {
+    session = {};
+    session = checkAuth();
+
+    form = $('#edit_asset');
+    data = {}
+    data.name = $('[name=Dynamic-asset_name]').val();
+    data.duration = $('[name=Dynamic-asset_duration]').val();
+    data.uri = $('[name=Dynamic-asset_uri]').val();
+    data.mimetype = $('[name=Dynamic-asset_type]').val();
+    data.start_date = $('[name=Dynamic-asset_start-date]').val();
+    data.end_date = $('[name=Dynamic-asset_end-date]').val();
+    data.asset_id = $('[name=Dynamic-asset_id]').val();
+    data.is_enabled = parseInt($('[name=Dynamic-asset_enabled]').val());
+    data.is_processing = 0;
+    data.nocache = 0;
+    data.playorder = 0;
+    data.skip_asset_check = "0";
+
+
+    if (urlParams.has('id')) {
+        id = urlParams.get('id');
+        device = await getDevice(id, session.token);
+        ip = device.hits[0]._source.device_address;
+        username = device.hits[0]._source.username;
+        password = device.hits[0]._source.password;
+        $.ajax({
+            type: "PUT",
+            url: "/api/v1/assets/" + ip + "/" + data.asset_id,
+            data: JSON.stringify(data),
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + session.token,
+                "DeviceAuth": "Basic " + btoa(username + ':' + password)
+            },
+
+            beforeSend: function () {
+                form.addClass("loading")
+            },
+            success: function (data, status) {
+                form.removeClass("loading")
+                $('.ui.modal').modal('hide');
+                setTimeout(function () {
+                    location.reload()
+                }, 1000)
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj);
+                $('.ui.modal').modal('hide');
+            }
+        })
+    }
+}
+
+async function addAsset() {
+    session = {};
+    session = checkAuth();
+    form = $('[name=add_asset]');
+    data = {};
+    time = {};
+    message = $('#messageadd_asset');
+    data.play_order = 0;
+    data.name = $('[name=asset_name]').val();
+    data.uri = $('[name=asset_uri]').val();
+    data.duration = $('[name=asset_duration]').val();
+    data.mimetype = "webpage"
+
+    time = await getTimeScreenly();
+
+    data.start_date = time.created;
+    data.end_date = time.end;
+
+    if ($('[name=asset_enabled]:checked').length != 0) {
+        data.is_enabled = 1;
+    } else {
+        data.is_enabled = 0;
+    }
+
+    if ($('[name=asset_skipcheck]:checked').length != 0) {
+        data.skip_asset_check = 1;
+    } else {
+        data.skip_asset_check = 0;
+    }
+
+    if ($('[name=asset_nocache]:checked').length != 0) {
+        data.nocache = 1;
+    } else {
+        data.nocache = 0;
+    }
+
+    if (!data.name || !data.uri || !data.duration) {
+        message.closest('.message').transition('fade');
+        setTimeout(function () {
+            message.closest('.message').transition('fade')
+        }, 2000);
+    } else {
+        if (urlParams.has('id')) {
+            id = urlParams.get('id');
+            $('table').tablesort()
+            device = await getDevice(id, session.token);
+            ip = device.hits[0]._source.device_address;
+            username = device.hits[0]._source.username;
+            password = device.hits[0]._source.password;
+            $.ajax({
+                type: "POST",
+                url: "/api/v1/assets/" + ip,
+                data: JSON.stringify(data),
+                dataType: "json",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + session.token,
+                    "DeviceAuth": "Basic " + btoa(username + ':' + password)
+                },
+
+                beforeSend: function () {
+                    form.addClass("loading")
+                },
+                success: function (data, status) {
+                    form.removeClass("loading")
+                    $('.ui.modal').modal('hide');
+                    setTimeout(function () {
+                        location.reload()
+                    }, 1000)
+                },
+                error: function (data, status) {
+                    obj = JSON.parse(data.responseText);
+                    alert("An error occured, Status: " + obj);
+                    $('.ui.modal').modal('hide');
+                }
+            })
+        }
+    }
+}
+async function assetToggle(asset_id) {
+    el = $('#' + asset_id);
+    if (urlParams.has('id')) {
+
+        device_id = urlParams.get('id');
+        device = await getDevice(device_id, session.token);
+        ip = device.hits[0]._source.device_address;
+        username = device.hits[0]._source.username;
+        password = device.hits[0]._source.password;
+        obj = {};
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/assets/" + ip + "/" + asset_id,
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "DeviceAuth": "Basic " + btoa(username + ':' + password)
+            },
+            async: false,
+            success: function (data, status) {
+                obj = data;
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.message);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+        if (obj.is_enabled == 1) {
+            obj.is_enabled = 0;
+        } else {
+            obj.is_enabled = 1;
+        }
+
+
+        delete obj.asset_id;
+        delete obj.is_processing;
+
+        console.log(obj);
+
+        $.ajax({
+            type: "PUT",
+            url: "/api/v1/assets/" + ip + "/" + asset_id,
+            data: JSON.stringify(obj),
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + session.token,
+                "DeviceAuth": "Basic " + btoa(username + ':' + password)
+            },
+            beforeSend: function () {
+                el.addClass("disabled");
+            },
+            success: function (data, status) {
+                el.prop("checked", !el.prop("checked"));
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.message);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+        el.removeClass("disabled");
+    }
+}
+
+async function addFileAsset() {
+    session = {};
+    session = checkAuth();
+
+    var dataForm = new FormData();
+    file_name = "";
+    form = $('#add_assetFile');
+    $.each($('#asset_file')[0].files, function (i, file) {
+        dataForm.append('formData', file);
+        file_name = file.name;
+    });
+
+    obj = {};
+
+    device_id = urlParams.get('id')
+
+    device = await getDevice(device_id, session.token);
+    ip = device.hits[0]._source.device_address;
+    username = device.hits[0]._source.username;
+    password = device.hits[0]._source.password;
+    $.ajax({
+        type: "POST",
+        url: '/api/v1/fileassets/' + ip,
+        data: dataForm,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        headers: {
+            "Authorization": "Bearer " + session.token,
+            "DeviceAuth": "Basic " + btoa(username + ':' + password),
+        },
+        beforeSend: function () {
+            form.addClass("loading")
+        },
+        success: function (data) {
+            obj = data;
+        },
+        error: function (data) {
+            alert("An error occured, Status: " + "Error");
+        }
+    });
+
+    data = {};
+    time = {};
+    data.play_order = 0;
+    data.name = file_name;
+    data.uri = obj.path;
+    // data.duration = $('[name=asset_duration]').val();
+    data.mimetype = obj.mimetype;
+
+    time = await getTimeScreenly();
+
+    data.start_date = time.created;
+    data.end_date = time.end;
+    data.duration = "0";
+    data.is_enabled = 0;
+    data.is_active = 1;
+    data.skip_asset_check = 0;
+    data.nocache = 0;
+
+    $.ajax({
+        type: "POST",
+        url: "/api/v1/assets/" + ip,
+        data: JSON.stringify(data),
+        dataType: "json",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.token,
+            "DeviceAuth": "Basic " + btoa(username + ':' + password)
+        },
+        success: function (data, status) {
+            form.removeClass("loading")
+            $('.ui.modal').modal('hide');
+            setTimeout(function () {
+                location.reload()
+            }, 1000)
+        },
+        error: function (data, status) {
+            obj = JSON.parse(data.responseText);
+            alert("An error occured, Status: " + obj);
+            $('.ui.modal').modal('hide');
+        }
+    })
 }
 
 // Users
@@ -673,13 +825,14 @@ async function getUsers() {
                                         </div>
                                     </h4>
                                 </td>
+                                <td>${obj._source.name}</td>
                                 <td>${obj._source.group}</td>
                                 <td class="center aligned">${obj._source.lastLoginAt}s</td>
                                 <td class="center aligned action-group">
-                                    <div onclick="" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
+                                    <div onclick="deleteUser('${obj._id}')" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
                                         <i class="large delete link icon"></i>
                                     </div>
-                                    <div onclick="" class="table-action" data-tooltip="Edit User" data-position="top center" data-variation="basic">
+                                    <div onclick="editUserModal('${obj._id}','${obj._source.name}','${obj._source.username}','${obj._source.group}')" class="table-action" data-tooltip="Edit User" data-position="top center" data-variation="basic">
                                         <i class="large edit link icon"></i>
                                     </div>
                                 </td>
@@ -700,6 +853,7 @@ async function getUsers() {
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>`
                 )
             } else {
@@ -714,18 +868,48 @@ function addUserModal() {
     $('#addUserModal').modal('show');
 }
 
+function editUserModal(id, name, username, group) {
+    $('#editUserModal').modal('show');
+    $('[name=Dynamic-id]').val(id)
+    $('[name=Dynamic-name_user]').val(name)
+    $('[name=Dynamic-user_name]').val(username)
+    $('[name=Dynamic-user_group]').val(group)
+}
+
+function deleteUser(id) {
+    check = confirm('Are you sure to delete this user ?')
+    if (check) {
+        $.ajax({
+            type: "DELETE",
+            url: "/api/v1/admin/users/" + id,
+            headers: {
+                "Authorization": "Bearer " + session.token,
+            },
+            success: function (data, status) {
+                alert("User " + name + " has been deleted")
+                location.reload();
+            },
+            error: function (data, status) {
+                obj = JSON.parse(data.responseText);
+                alert("An error occured, Status: " + obj);
+            }
+        })
+    }
+}
+
 function addUser() {
     data = {}
     data.username = $('[name=user_name]').val()
     data.password = $('[name=user_password]').val()
+    data.name = $('[name=name_user]').val()
     conf_pass = $('[name=conf_password]').val()
     data.group = $('[name=user_group]').val()
     passmessage = $('#errorpassword')
     form = $('[name=add_user]');
 
 
-    if (data.username && data.password && conf_pass && data.group) {
-        if ( data.password == conf_pass) {
+    if (data.username && data.password && conf_pass && data.group && data.name) {
+        if (data.password == conf_pass) {
             $.ajax({
                 type: "POST",
                 url: "/api/v1/admin/users",
@@ -764,5 +948,5 @@ function addUser() {
             $('#message').closest('.message').transition('fade')
         }, 2000);
     }
-    
+
 }

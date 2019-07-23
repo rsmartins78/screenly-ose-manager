@@ -40,7 +40,7 @@
                         <div class="ui icon header">
                             Faça login na ferramenta
                         </div>
-                        <form class="ui form">
+                        <form action='' method='' class="ui form">
                             <div class="fields">
                                 <div class="field">
                                     <div class="ui left icon input">
@@ -57,10 +57,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="login()" class="ui primary inverted button">
-                                Login
-                            </button>
                         </form>
+                        <button onclick="login()" class="ui primary inverted button">
+                            Login
+                        </button>
                     </div>
                 </div>
             </div>
@@ -77,12 +77,12 @@
         }
         $("#loginUser").on('keyup', function (e) {
             if (e.keyCode == 13) { // 13 é o enter
-                login()
+                login();
             }
         });
         $("#loginPass").on('keyup', function (e) {
             if (e.keyCode == 13) { // 13 é o enter
-                login()
+                login();
             }
         });
     </script>

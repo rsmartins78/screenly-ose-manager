@@ -18,6 +18,8 @@
     <div class="content">
         <form id="edit_asset" name="edit_asset" class="ui form">
             <h4 class="ui dividing header">Asset Information</h4>
+            <input type="hidden" name="Dynamic-asset_id" required>
+            <input type="hidden" name="Dynamic-asset_enabled" required>
             <div class="two fields">
                 <div class="field">
                     <label>Name *</label>
@@ -69,7 +71,7 @@
         <div class="ui black deny button">
             Cancel
         </div>
-        <button onclick="" class="ui green right labeled icon button">
+        <button onclick="sendEditedAsset()" class="ui green right labeled icon button">
             Save
             <i class="checkmark icon"></i>
         </button>
