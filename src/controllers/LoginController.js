@@ -17,7 +17,7 @@ module.exports = {
         const group = result.hits.hits[0]._source.group;
         const token = await generateToken({ userId, user, group }); // Generating bearer token
         elastic.updateLoginAt(user);
-        res.send({ success: true, token, userId, group });
+        res.send({ success: true, token, userId, group, user });
       } else {
         res.status(403).send({ success: false, message: "incorrect password" });
       }
@@ -27,6 +27,6 @@ module.exports = {
     }
   },
   async checkSession(req, res) {
-    res.status(200).send({ success: true, message: "user logged" });
+    res.status(200).send({ success: true, message: "user logged", username: req.userData.user, group: req.userData.group });
   }
 };
