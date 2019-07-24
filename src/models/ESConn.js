@@ -103,6 +103,7 @@ client.indices.exists({ index: "screenly" }, function(error, exists) {
   }
 });
 
+// Check if screenly users indice exists, if not, create it
 client.indices.exists({ index: "screenly-users" }, (error, result) => {
   if (error) {
     throw new Error(error.message);
@@ -123,6 +124,30 @@ client.indices.exists({ index: "screenly-users" }, (error, result) => {
     );
   } else {
     checkFirstAdmin();
+    console.log("Users Structure Ok");
+  }
+});
+
+// Check if audit log indice exists, if not, create it
+client.indices.exists({ index: "screenly-auditlog" }, (error, result) => {
+  if (error) {
+    throw new Error(error.message);
+  }
+  if (result === false) {
+    client.indices.create(
+      {
+        index: "screenly-auditlog"
+      },
+      (exception, res) => {
+        if (exception) {
+          throw new Error(exception);
+        } else {
+          checkFirstAdmin();
+          console.log("DB: Users Structure OK");
+        }
+      }
+    );
+  } else {
     console.log("Users Structure Ok");
   }
 });

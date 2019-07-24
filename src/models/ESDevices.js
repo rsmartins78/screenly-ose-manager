@@ -117,27 +117,7 @@ module.exports = {
         }
       }
     });
-    function getMoreUntilDone() {
-      response.hits.hits.forEach(function(hit) {
-        allRecords.push(hit);
-      });
-
-      if (response.hits.total !== allRecords.length) {
-        // now we can call scroll over and over
-        client.scroll(
-          {
-            scrollId: response._scroll_id,
-            scroll: "30s"
-          },
-          getMoreUntilDone
-        );
-      } else {
-        console.log("all done", allRecords);
-      }
-    }
-
-    getMoreUntilDone();
-    return allRecords;
+    return response;
   },
   async updateDevice(id, payload) {
     const time = await getTime();
