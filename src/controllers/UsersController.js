@@ -29,7 +29,7 @@ module.exports = {
           res.status(200).send({
             success: true,
             message: "user created with success",
-            username: user,
+            username: data.user,
             id: resultUser._id
           });
         } else {
