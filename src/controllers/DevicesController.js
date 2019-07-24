@@ -7,8 +7,8 @@ module.exports = {
     function sendResponse(value) {
       if (!value.status) {
         const editedBody = { success: true, message: "Records Loaded" };
-        Object.assign(value, editedBody);
-        res.send(value);
+        Object.assign(value.hits, editedBody);
+        res.send(value.hits);
       } else if (value.status === 404) {
         res
           .status(404)
