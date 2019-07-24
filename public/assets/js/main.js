@@ -1033,12 +1033,11 @@ function addUser() {
     data = {}
     data.username = $('[name=user_name]').val()
     data.password = $('[name=user_password]').val()
-    data.name = $('[name=name_user]').val()
+    data.name = $('[name=name]').val()
     conf_pass = $('[name=conf_password]').val()
     data.group = $('[name=user_group]').val()
     passmessage = $('#errorpassword')
     form = $('[name=add_user]');
-
 
     if (data.username && data.password && conf_pass && data.group && data.name) {
         if (data.password == conf_pass) {
@@ -1056,11 +1055,11 @@ function addUser() {
                     form.addClass("loading")
                 },
                 success: function (data, status) {
-                    form.removeClass("loading")
-                    $('.ui.modal').modal('hide');
                     setTimeout(function () {
+                        form.removeClass("loading")
+                        $('.ui.modal').modal('hide');
                         location.reload()
-                    }, 1000)
+                    }, 2500)
                 },
                 error: function (data, status) {
                     obj = JSON.parse(data.responseText);
