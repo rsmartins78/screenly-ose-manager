@@ -23,9 +23,8 @@ module.exports = {
     });
     return result;
   },
-  async createUser(data) {
-    console.table({data})
-    const {name, user, password, group } = data
+  async createUser({data}) {
+    const { name, user, password, group } = data
     const time = await getTime();
     const new_passwd = await encryptData(password)
     const result = await client.index({

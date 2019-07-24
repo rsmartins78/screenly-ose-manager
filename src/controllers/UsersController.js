@@ -12,7 +12,6 @@ module.exports = {
       data.password = req.body.password;
       data.group = req.body.group;
 
-      console.table({data})
       if (!data.group) {
         group = "users";
       }
