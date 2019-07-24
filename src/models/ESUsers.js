@@ -23,13 +23,15 @@ module.exports = {
     });
     return result;
   },
-  async createUser(user, password, group) {
+  async createUser({data}) {
+    const { name, user, password, group } = data
     const time = await getTime();
     const new_passwd = await encryptData(password)
     const result = await client.index({
       index: "screenly-users",
       type: "users",
       body: {
+        name: name,
         username: user,
         password: new_passwd,
         group: group,

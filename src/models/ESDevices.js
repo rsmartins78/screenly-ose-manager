@@ -24,20 +24,87 @@ module.exports = {
   },
 
   async listAllDevices() {
-    const response = await client.search({
-      index: "screenly",
-      type: "raspberry",
-      body: {
-        query: {
-          match_all: {}
-        },
-        // sort: { "device_name.keyword": { order: "asc" } }
-      }
-    });
-    console.log(response.hits.hits.length);
-    return response;
-  },
+    let responseAll = {};
+    responseAll["hits"] = {};
+    responseAll.hits.hits = [];
+    const responseQueue = [];
 
+    responseQueue.push(
+      await client.search({
+        index: "screenly",
+        type: "raspberry",
+        scroll: "30s",
+        body: {
+          query: {
+            match_all: {}
+          },
+          sort: { "device_name.keyword": { order: "asc" } }
+        }
+      })
+    );
+
+    while (responseQueue.length) {
+      const response = responseQueue.shift();
+
+      responseAll.hits.hits = responseAll.hits.hits.concat(response.hits.hits);
+
+      if (response.hits.total == responseAll.hits.hits.length) {
+        break;
+      }
+
+      // get the next response if there are more to fetch
+      responseQueue.push(
+        await client.scroll({
+          scrollId: response._scroll_id,
+          scroll: "30s"
+        })
+      );
+    }
+
+    return responseAll;
+  },
+  async listAllPerGroup(group) {
+    let responseAll = {};
+    responseAll["hits"] = {};
+    responseAll.hits.hits = [];
+    const responseQueue = [];
+
+    responseQueue.push(
+      await client.search({
+        index: "screenly",
+        type: "raspberry",
+        scroll: "30s",
+        body: {
+          query: {
+            match: {
+              device_group: group
+            }
+          },
+          sort: { "device_name.keyword": { order: "asc" } }
+        }
+      })
+    );
+
+    while (responseQueue.length) {
+      const response = responseQueue.shift();
+
+      responseAll.hits.hits = responseAll.hits.hits.concat(response.hits.hits);
+
+      if (response.hits.total == responseAll.hits.hits.length) {
+        break;
+      }
+
+      // get the next response if there are more to fetch
+      responseQueue.push(
+        await client.scroll({
+          scrollId: response._scroll_id,
+          scroll: "30s"
+        })
+      );
+    }
+
+    return responseAll;
+  },
   async searchById(query, group) {
     const response = await client.search({
       index: "screenly",
@@ -45,29 +112,33 @@ module.exports = {
       body: {
         query: {
           match: {
-            _id: query,
+            _id: query
           }
         }
       }
     });
-    return response;
-  },
-  async listAllPerGroup(group) {
-    const response = await client.search({
-      index: "screenly",
-      type: "raspberry",
-      body: {
-        query: {
-          match: {
-            device_group: group
-          }
-        },
-        sort: { "device_name.keyword": { order: "asc" } }
-      }
-    });
-    return response;
-  },
+    function getMoreUntilDone() {
+      response.hits.hits.forEach(function(hit) {
+        allRecords.push(hit);
+      });
 
+      if (response.hits.total !== allRecords.length) {
+        // now we can call scroll over and over
+        client.scroll(
+          {
+            scrollId: response._scroll_id,
+            scroll: "30s"
+          },
+          getMoreUntilDone
+        );
+      } else {
+        console.log("all done", allRecords);
+      }
+    }
+
+    getMoreUntilDone();
+    return allRecords;
+  },
   async updateDevice(id, payload) {
     const time = await getTime();
     const response = client.update({

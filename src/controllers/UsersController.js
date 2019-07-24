@@ -4,20 +4,25 @@ const { compareData } = require("../../lib/encrypt");
 module.exports = {
   async createUser(req, res) {
     if (req.userData.group === "admin") {
-      const user = req.body.username;
-      const password = req.body.password;
-      const group = req.body.group;
-      if (!group) {
+
+      const data = {}
+
+      data.name = res.body.name
+      data.user = req.body.username;
+      data.password = req.body.password;
+      data.group = req.body.group;
+
+      if (!data.group) {
         group = "users";
       }
-      const result = await elastic.validateLogin(user);
+      const result = await elastic.validateLogin(data.user);
       // Checking if user already exists on system
       if (result.hits.total !== 0) {
         res
           .status(400)
           .send({ success: false, message: "user already exists on system" });
       } else {
-        const resultUser = await elastic.createUser(user, password, group);
+        const resultUser = await elastic.createUser({data});
         // Creating user on database
         if (resultUser.result === "created") {
           console.log("Novo Usuário Criado: ", user);
