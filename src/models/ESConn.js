@@ -9,9 +9,9 @@ const client = new Client({
   requestTimeout: 60000
 });
 
-client.cluster.health({}, function(err, health) {
-  console.log("\n-- ElasticSearch Health --\n", health, "\n -- End --\n");
-});
+// client.cluster.health({}, function(err, health) {
+//   console.log("\n-- ElasticSearch Health --\n", health, "\n -- End --\n");
+// });
 
 async function checkFirstAdmin() {
   const passwd = await encryptData(process.env.ADMIN_PASS || "admin");
@@ -143,12 +143,12 @@ client.indices.exists({ index: "screenly-auditlog" }, (error, result) => {
           throw new Error(exception);
         } else {
           checkFirstAdmin();
-          console.log("DB: Users Structure OK");
+          console.log("DB: Audit Log Structure OK");
         }
       }
     );
   } else {
-    console.log("Users Structure Ok");
+    console.log("Audit Log Structure Ok");
   }
 });
 
