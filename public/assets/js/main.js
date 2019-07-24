@@ -112,7 +112,7 @@ function getAll() {
         url: "/api/v1/devices",
         headers: { "Authorization": "Bearer " + session.token },
         success: function (data, status) {
-            $.each(data.hits, function (index, obj) {
+            $.each(data, function (index, obj) {
                 container.append(
                     `<div class="card">
                         <div class="content">

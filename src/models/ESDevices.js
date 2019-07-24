@@ -24,17 +24,41 @@ module.exports = {
   },
 
   async listAllDevices() {
-    const response = client.search({
+
+    var allRecords = [];
+
+    const response = await client.search({
       index: "screenly",
       type: "raspberry",
+      scroll: '30s',
+      size: 10000,
       body: {
         query: {
           match_all: {}
         },
-        sort: { "device_name.keyword": { order: "asc" } }
+        sort: { "device_name.keyword": { order: "asc" } },
       }
     });
-    return response;
+
+    function getMoreUntilDone(){
+      response.hits.hits.forEach(function (hit){
+        allRecords.push(hit)
+      })
+  
+      if (response.hits.total !== allRecords.length) {
+        // now we can call scroll over and over
+        client.scroll({
+          scrollId: response._scroll_id,
+          scroll: '30s'
+        }, getMoreUntilDone);
+      } else {
+        console.log('all done', allRecords);
+      }
+    }
+    
+    getMoreUntilDone();
+    console.log(allRecords)
+    return allRecords;
   },
 
   async searchById(query, group) {
@@ -61,7 +85,8 @@ module.exports = {
             device_group: group
           }
         },
-        sort: { "device_name.keyword": { order: "asc" } }
+        sort: { "device_name.keyword": { order: "asc" } },
+        size: -1
       }
     });
     return response;
