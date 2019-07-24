@@ -24,16 +24,17 @@ module.exports = {
   },
 
   async listAllDevices() {
-    const response = client.search({
+    const response = await client.search({
       index: "screenly",
       type: "raspberry",
       body: {
         query: {
           match_all: {}
         },
-        sort: { "device_name.keyword": { order: "asc" } }
+        // sort: { "device_name.keyword": { order: "asc" } }
       }
     });
+    console.log(response.hits.hits.length);
     return response;
   },
 
