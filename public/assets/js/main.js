@@ -304,13 +304,7 @@ function deleteDevice(id, name) {
 function checkRole () {
     if (sessionStorage.getItem('group') == 'admin') {
         $('#adminButtons').append(
-            `<div data-inverted="" data-tooltip="Device groups" data-position="right center" data-variation="basic">
-                <a href="/home" class="item">
-                    <i class="large th icon">
-                    </i>
-                </a>
-                </div>
-                <div data-inverted="" data-tooltip="Manage users" data-position="right center" data-variation="basic">
+            `<div data-inverted="" data-tooltip="Manage users" data-position="right center" data-variation="basic">
                 <a href="/manage_users" class="item">
                     <i class="large users icon">
                     </i>
@@ -325,6 +319,7 @@ function checkAuth() {
     var token = localStorage.getItem("user-token");
     var session = {}
     var nextLocation = window.location.pathname + window.location.search;
+    var tag = $('#user_message');
     if (!token) {
         session.valid = false;
         session.token = undefined;
@@ -349,6 +344,11 @@ function checkAuth() {
             }
         })
     }
+    tag.append(
+        `<div class="ui sub header">${sessionStorage.getItem('user')}</div>
+        Hello!!`
+    )
+    console.log(tag);
     return session;
 }
 
@@ -435,9 +435,7 @@ async function getAssets() {
                     container.append(
                         `<tr>
                             <td>
-                                <h4 class="ui image header">
-                                    <img src="https://previews.123rf.com/images/naddya/naddya1406/naddya140600004/28904692-seamless-background-with-raspberry-vector-illustration.jpg"
-                                        class="ui mini rounded image">
+                                <h4 class="ui header">
                                     <div class="wrap-text content">
                                        ${obj.name}
                                     </div>

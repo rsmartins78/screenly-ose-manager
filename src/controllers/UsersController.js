@@ -7,7 +7,7 @@ module.exports = {
 
       const data = {}
 
-      data.name = res.body.name
+      data.name = req.body.name
       data.user = req.body.username;
       data.password = req.body.password;
       data.group = req.body.group;
@@ -25,7 +25,7 @@ module.exports = {
         const resultUser = await elastic.createUser({data});
         // Creating user on database
         if (resultUser.result === "created") {
-          console.log("Novo Usuário Criado: ", user);
+          console.log("Novo Usuário Criado: ", data.user);
           res.status(200).send({
             success: true,
             message: "user created with success",
