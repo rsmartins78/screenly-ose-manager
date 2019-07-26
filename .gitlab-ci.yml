@@ -1,0 +1,25 @@
+image: docker:stable
+services:
+  - xeizmendi/docker-dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  HTTP_PROXY: "$HTTP_PROXY"
+  DOCKER_INSECURE_REGISTRY: "$CI_REGISTRY"
+  HTTPS_PROXY: "$HTTP_PROXY"
+  NO_PROXY: "$NO_PROXY"
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+
+stages:
+  - build
+
+docker-build:
+  stage: build
+  script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker build $DOCKER_BUILD_ARGS -t $CI_REGISTRY_IMAGE .
+  - docker push $CI_REGISTRY_IMAGE
+  # - docker build $DOCKER_BUILD_ARGS -t $IMAGE_TAG .
+  # - docker push $IMAGE_TAG  
+  # only: 
+  # - tags
