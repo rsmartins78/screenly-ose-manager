@@ -112,6 +112,7 @@ function getAll() {
         url: "/api/v1/devices",
         headers: { "Authorization": "Bearer " + session.token },
         success: function (data, status) {
+            console.log(data);
             $.each(data.hits, function (index, obj) {
                 container.append(
                     `<div class="card">
@@ -128,19 +129,24 @@ function getAll() {
                             </div>
                             <div class="ui icon header">
                                 <i class="fab fa-raspberry-pi"></i>
-                                "${obj._source.device_name}"
+                                 ${obj._source.device_name}
                             </div>
-                            <div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
+                            ${obj._source.online == true ?
+                            `<div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
                                 <div class="ui green right ribbon label">
-                                    <i class="play icon"></i>
+                                    <i class="check icon"></i>
                                 </div>
-                            </div>
+                            </div>` : `<div class="tip right floated" data-tooltip="Device Offline" data-position="left center" data-variation="basic">
+                                                <div class="ui red right ribbon label">
+                                                    <i class="times circle icon"></i>
+                                                </div>
+                                            </div>`}
                             <div class="meta">
-                                <p>Group: "${obj._source.device_group}"</p>
-                                <p>Ip: "${obj._source.device_address}"</p>
+                                <p>Group: ${obj._source.device_group}</p>
+                                <p>IP: ${obj._source.device_address}</p>
                             </div>
                             <div class="description">
-                                "${obj._source.device_type}"
+                                ${obj._source.device_type}
                             </div>
                         </div>
                         <div class="extra content">
