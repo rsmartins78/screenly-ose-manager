@@ -129,7 +129,7 @@ function getAll() {
                             </div>
                             <div class="ui icon header">
                                 <i class="fab fa-raspberry-pi"></i>
-                                "${obj._source.device_name}"
+                                 ${obj._source.device_name}
                             </div>
                             ${obj._source.online == true ?
                             `<div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
@@ -142,11 +142,11 @@ function getAll() {
                                                 </div>
                                             </div>`}
                             <div class="meta">
-                                <p>Group: "${obj._source.device_group}"</p>
-                                <p>Ip: "${obj._source.device_address}"</p>
+                                <p>Group: ${obj._source.device_group}</p>
+                                <p>IP: ${obj._source.device_address}</p>
                             </div>
                             <div class="description">
-                                "${obj._source.device_type}"
+                                ${obj._source.device_type}
                             </div>
                         </div>
                         <div class="extra content">
