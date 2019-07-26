@@ -350,8 +350,21 @@ function checkAuth() {
             }
         })
     }
+    user_id = sessionStorage.getItem('id');
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/users/" + user_id,
+        headers: { "Authorization": "Bearer " + session.token },
+        async: false,
+        success: function (data, status) {
+            sessionStorage.setItem('name', data.name);
+        },
+        error: function () {
+            sessionStorage.setItem('name', "User not founded");
+        }
+    })
     tag.append(
-        `<div class="ui sub header">${sessionStorage.getItem('user')}</div>
+        `<div class="ui sub header">${sessionStorage.getItem('name')}</div>
         Hello!!`
     )
     console.log(tag);
@@ -382,6 +395,7 @@ function login() {
                 localStorage.setItem('user-token', data.token);
                 sessionStorage.setItem('user', data.user);
                 sessionStorage.setItem('group', data.group);
+                sessionStorage.setItem('id', data.userId);
                 if (localStorage.getItem('next-location')) {
                     next = localStorage.getItem('next-location');
                     localStorage.removeItem('next-location');
@@ -391,17 +405,27 @@ function login() {
                 }
             },
             error: function () {
-                errormessage.closest('.message').transition('fade');
-                setTimeout(function () {
-                    errormessage.closest('.message').transition('fade')
-                }, 2000);
+                $.uiAlert({
+                    textHead: 'Login Error',
+                    text: 'User or password invalid, check the fields',
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
             }
         })
     } else {
-        errormessage.closest('.message').transition('fade');
-        setTimeout(function () {
-            errormessage.closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Login Error',
+            text: 'Please fill the fields "username" and "password"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     }
 }
 
