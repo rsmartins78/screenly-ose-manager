@@ -1,4 +1,15 @@
 const dbclient = require("../models/ESDevices");
+const cron = require("node-cron");
+const { checkOnlineDevices } = require("./OnlineDevices");
+
+let onlineStatus = [];
+
+(async function() {
+  onlineStatus = await checkOnlineDevices();
+  cron.schedule("0/30 * * * * *", async () => {
+    onlineStatus = await checkOnlineDevices();
+  });
+})();
 
 module.exports = {
   async GetDevices(req, res) {
@@ -17,6 +28,16 @@ module.exports = {
     }
     if (query === undefined && group == "admin") {
       const resp = await dbclient.listAllDevices();
+
+
+      for (i in resp.hits.hits){
+        for (o in onlineStatus) {
+          if (resp.hits.hits[i]._id == onlineStatus[o].id){
+            resp.hits.hits[i]._source.online = onlineStatus[o].online
+          }
+        }
+      }
+
       sendResponse(resp);
       console.log(`New search without query at ${new Date()}`);
     } else if (query === undefined && group !== "admin") {
@@ -29,20 +50,20 @@ module.exports = {
     } else {
       res.status(400).send({
         success: false,
-        message: "Please define start and limit query"
+        message: "Group not informed"
       });
     }
   },
   // To get one device by id
-  async GetOneDevice(req, res){
-    const id = req.params.id
+  async GetOneDevice(req, res) {
+    const id = req.params.id;
     const group = req.userData.group;
-    if (id != undefined){
-      const response = await dbclient.searchById(id,group);
-      if (response.hits.hits.total = 1){
+    if (id != undefined) {
+      const response = await dbclient.searchById(id, group);
+      if ((response.hits.hits.total = 1)) {
         res.send(response.hits);
       } else {
-        res.status(404).send({success: false, message: 'no device found'})
+        res.status(404).send({ success: false, message: "no device found" });
       }
     }
   },
