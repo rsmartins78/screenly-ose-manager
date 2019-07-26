@@ -295,8 +295,18 @@ function deleteDevice(id, name) {
             url: "/api/v1/devices?id=" + id,
             headers: { "Authorization": "Bearer " + session.token },
             success: function (data, status) {
-                alert("Device " + name + " has been deleted")
-                location.reload();
+                $.uiAlert({
+                    textHead: 'Success',
+                    text: 'The device ' + name + ' has been deleted!',
+                    bgcolor: '#19c3aa',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'checkmark box',
+                    time: 2
+                });
+                setTimeout(function () {
+                    location.reload()
+                }, 2000)
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
