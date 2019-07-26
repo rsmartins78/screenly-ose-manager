@@ -399,17 +399,27 @@ function login() {
                 }
             },
             error: function () {
-                errormessage.closest('.message').transition('fade');
-                setTimeout(function () {
-                    errormessage.closest('.message').transition('fade')
-                }, 2000);
+                $.uiAlert({
+                    textHead: 'Login Error',
+                    text: 'User or password invalid, check the fields',
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
             }
         })
     } else {
-        errormessage.closest('.message').transition('fade');
-        setTimeout(function () {
-            errormessage.closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Login Error',
+            text: 'Please fill the fields "username" and "password"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     }
 }
 
