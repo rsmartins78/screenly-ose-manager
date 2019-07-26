@@ -1,6 +1,7 @@
 const dbclient = require("../models/ESDevices");
 const cron = require("node-cron");
 const { checkOnlineDevices } = require("./OnlineDevices");
+const { sendToAuditLog } = require("../../lib/auditlog");
 
 let onlineStatus = [];
 
@@ -29,11 +30,10 @@ module.exports = {
     if (query === undefined && group == "admin") {
       const resp = await dbclient.listAllDevices();
 
-
-      for (i in resp.hits.hits){
+      for (i in resp.hits.hits) {
         for (o in onlineStatus) {
-          if (resp.hits.hits[i]._id == onlineStatus[o].id){
-            resp.hits.hits[i]._source.online = onlineStatus[o].online
+          if (resp.hits.hits[i]._id == onlineStatus[o].id) {
+            resp.hits.hits[i]._source.online = onlineStatus[o].online;
           }
         }
       }
@@ -70,11 +70,21 @@ module.exports = {
   // To add devices
   async AddDevice(req, res) {
     const payload = req.body;
+
+    let user = req.userData.user;
+    let action = "Add Device";
+    let message = `Added "${
+      payload.device_name
+    }", Group "${payload.device_group || "verify"}" with address ${
+      payload.device_address
+    }" to system`;
+
     if (payload !== undefined) {
       const resp = await dbclient.addDevice(payload);
       if (resp.result === "created") {
         console.log("Success inserting data on DB");
         res.setHeader("Content-Type", "application/json");
+        sendToAuditLog(user, action, message);
         res.send(resp);
       } else {
         console.log("Failed to insert data on DB");
@@ -95,11 +105,21 @@ module.exports = {
     const deviceId = req.body.id;
     delete req.body.id;
     const payload = req.body;
+
+    let user = req.userData.user;
+    let action = "Update Device";
+    let message = `Updated device "${deviceId}" with new values: Name: "${
+      payload.device_name
+    }", Group: "${payload.device_group || "verify"}" and address "${
+      payload.device_address
+    }"`;
+
     if (payload !== undefined) {
       try {
         const resp = await dbclient.updateDevice(deviceId, payload);
         if (resp.result === "updated") {
           console.log("Success updating data on DB");
+          sendToAuditLog(user, action, message);
           res.setHeader("Content-Type", "application/json");
           res
             .status(200)
@@ -129,11 +149,15 @@ module.exports = {
   // To delete devices by ID
   async DeleteDevice(req, res) {
     const deviceId = req.query.id;
+    let user = req.userData.user;
+    let action = "Delete Device";
+    let message = `Deleted device ID "${deviceId}" from system`;
     if (deviceId) {
       const resp = await dbclient
         .deleteDevice(deviceId)
         .then(function(resp) {
           if (resp.result === "deleted") {
+            sendToAuditLog(user, action, message);
             res.send(resp);
           } else {
             console.log("Error on delete", resp);

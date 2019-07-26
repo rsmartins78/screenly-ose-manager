@@ -2,6 +2,8 @@ const IncomingForm = require("formidable").IncomingForm;
 const request = require("request-promise-native");
 const fs = require("fs");
 
+const { sendToAuditLog } = require("../../lib/auditlog");
+
 module.exports = {
   async GetAssetsByDevice(req, res) {
     const device = req.params.device;
@@ -14,7 +16,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets`;
 
-      const gettingAssets = await request
+      await request
         .get({
           url,
           headers: {
@@ -22,6 +24,10 @@ module.exports = {
             Authorization: authorization
           },
           timeout: 5000
+        })
+        .then(response => {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(response);
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -31,10 +37,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (gettingAssets !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(gettingAssets);
-      }
     }
   },
   // To retrieve the select asset from selected device
@@ -51,7 +53,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
-      const gettingOneAsset = await request
+      await request
         .get({
           url,
           headers: {
@@ -59,6 +61,10 @@ module.exports = {
             Authorization: authorization
           },
           timeout: 5000
+        })
+        .then(response => {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(response);
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -68,10 +74,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (gettingOneAsset !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(gettingOneAsset);
-      }
     }
   },
   // To insert asset to selected device
@@ -96,6 +98,12 @@ module.exports = {
     const body = req.body;
     const authorization = req.headers.deviceauth;
 
+    let user = req.userData.user;
+    let action = "Add Asset to Device";
+    let message = `Added "${body.name}" with path "${body.uri}", type "${
+      body.mimetype
+    }" and state "${body.is_active == 1 ? `active` : `inactive`}" to device ${device}`;
+
     if (!device) {
       res.status(400).send({
         success: false,
@@ -105,7 +113,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets`;
 
-      const addingAsset = await request
+      await request
         .post({
           url,
           headers: {
@@ -116,6 +124,11 @@ module.exports = {
           json: true,
           timeout: 5000
         })
+        .then(resp => {
+          sendToAuditLog(user, action, message);
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(resp);
+        })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
           res.status(500).send({
@@ -124,13 +137,9 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (addingAsset !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(addingAsset);
-      }
     }
   },
-  
+
   async SendFileAsset(req, res) {
     const device = req.params.device;
     const authorization = req.headers.deviceauth;
@@ -211,6 +220,12 @@ module.exports = {
     const body = req.body;
     const authorization = req.headers.deviceauth;
 
+    let user = req.userData.user;
+    let action = "Update Asset on Device";
+    let message = `Updated "${body.name}/${assetId}" with path "${
+      body.uri
+    }", type "${body.mimetype}" and state "${body.is_active == 1 ? `active` : `inactive`}" to device ${device}`;
+
     if (!device) {
       res.status(400).send({
         success: false,
@@ -220,7 +235,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
-      const updatingAsset = await request
+      await request
         .put({
           url,
           headers: {
@@ -231,6 +246,11 @@ module.exports = {
           json: true,
           timeout: 5000
         })
+        .then(response => {
+          sendToAuditLog(user, action, message);
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(response);
+        })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
           res.status(500).send({
@@ -239,10 +259,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (updatingAsset !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(updatingAsset);
-      }
     }
   },
   // To delete an asset to selected device
@@ -250,6 +266,10 @@ module.exports = {
     const device = req.params.device;
     const assetId = req.params.assetId;
     const authorization = req.headers.deviceauth;
+
+    let user = req.userData.user;
+    let action = "Delete Asset from Device";
+    let message = `Deleted "${assetId}" from device "${device}"`;
 
     if (!device) {
       res.status(400).send({
@@ -260,12 +280,20 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
-      const deleting = await request
+      await request
         .delete(url, {
           timeout: 5000,
           headers: {
             Authorization: authorization
           }
+        })
+        .then(response => {
+          sendToAuditLog(user, action, message);
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send({
+            success: true,
+            message: "Asset removed from device " + device
+          });
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -275,13 +303,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (deleting !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send({
-          success: true,
-          message: "Asset removed from device " + device
-        });
-      }
     }
   }
 };

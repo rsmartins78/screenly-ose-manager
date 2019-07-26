@@ -1,16 +1,22 @@
 const elastic = require("../models/ESUsers");
 const { compareData } = require("../../lib/encrypt");
+const { sendToAuditLog } = require("../../lib/auditlog");
 
 module.exports = {
   async createUser(req, res) {
     if (req.userData.group === "admin") {
+      const data = {};
 
-      const data = {}
-
-      data.name = req.body.name
+      data.name = req.body.name;
       data.user = req.body.username;
       data.password = req.body.password;
       data.group = req.body.group;
+
+      let user = req.userData.user;
+      let action = "Add User";
+      let message = `Added ${data.name}, username: ${data.password} to group ${
+        data.group
+      }`;
 
       if (!data.group) {
         group = "users";
@@ -22,10 +28,11 @@ module.exports = {
           .status(400)
           .send({ success: false, message: "user already exists on system" });
       } else {
-        const resultUser = await elastic.createUser({data});
+        const resultUser = await elastic.createUser({ data });
         // Creating user on database
         if (resultUser.result === "created") {
           console.log("Novo Usuário Criado: ", data.user);
+          sendToAuditLog(user, action, message);
           res.status(200).send({
             success: true,
             message: "user created with success",
@@ -48,6 +55,7 @@ module.exports = {
   async getUsers(req, res) {
     if (req.userData.group === "admin") {
       const result = await elastic.getUsers();
+
       if (result.hits.total >= 1) {
         for (i in result.hits.hits) {
           delete result.hits.hits[i]._source.password; // removed password before send response
@@ -67,6 +75,10 @@ module.exports = {
   async updatePassword(req, res) {
     const reqUser = req.userData.user;
     const user = req.body.username;
+
+    let action = "User Update Password";
+    let message = `User "${user}" updated his/her password.`;
+
     if (reqUser == user) {
       const old_password = req.body.old_password;
       const new_password = req.body.new_password;
@@ -87,11 +99,12 @@ module.exports = {
             updateReponse.result === "updated" ||
             updateReponse.result === "noop"
           ) {
+            sendToAuditLog(user, action, message);
             res.send({ success: true, message: "password updated" });
           } else {
             res
               .status(500)
-              .send({ success: true, message: "failed to update password" });
+              .send({ success: false, message: "failed to update password" });
           }
         } else {
           res
@@ -114,21 +127,23 @@ module.exports = {
       objUser.username = req.body.username;
       objUser.group = req.body.group;
 
+      let action = "Admin Update User";
+      let message = `User "${objUser.name}/${objUser.username}" was updated by admin "${req.userData.user}"`;
+
       if (password != undefined) {
         objUser.password = req.body.password;
         const response = await elastic.updateUserWithPassword(userId, {
           objUser
         });
         if (response.result === "updated" || response.result === "noop") {
+          sendToAuditLog(req.userData.user, action, message);
           res.send({ success: true, message: "user updated" });
         } else {
-          res
-            .status(500)
-            .send({
-              success: true,
-              message: "failed to update update user",
-              code: 20
-            });
+          res.status(500).send({
+            success: true,
+            message: "failed to update update user",
+            code: 20
+          });
         }
       } else if (objUser.password == undefined) {
         const response = await elastic.updateUserWithoutPassword(userId, {
@@ -137,13 +152,11 @@ module.exports = {
         if (response.result === "updated" || response.result === "noop") {
           res.send({ success: true, message: "user updated" });
         } else {
-          res
-            .status(500)
-            .send({
-              success: true,
-              message: "failed to update update user",
-              code: 30
-            });
+          res.status(500).send({
+            success: true,
+            message: "failed to update update user",
+            code: 30
+          });
         }
       }
     } else {
@@ -167,8 +180,14 @@ module.exports = {
   async deleteUser(req, res) {
     if (req.userData.group === "admin") {
       const userId = req.params.id;
+      const result = await elastic.getUserById(userId);
+
+      let action = "Admin Update User";
+      let message = `User "${result.hits.hits[0]._source.name}/${result.hits.hits[0]._source.username}" was deleted by admin "${req.userData.user}"`;
+
       const result = await elastic.deleteUserById(userId);
       if (result && !result.status) {
+        sendToAuditLog(req.userData.user, action, message);
         res.status(200).send({
           success: true,
           message: `User ${userId} removed with success`

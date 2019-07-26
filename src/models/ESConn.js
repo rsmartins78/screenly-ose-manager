@@ -34,6 +34,7 @@ async function checkFirstAdmin() {
       type: "users",
       body: {
         username: process.env.ADMIN_USER || "admin",
+        name: process.env.ADMIN_NAME || "Administrator",
         password: passwd,
         group: "admin",
         createdAt: time,
