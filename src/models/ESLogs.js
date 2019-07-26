@@ -15,7 +15,6 @@ module.exports = {
         message: message
       }
     });
-    console.log(result)
     return result;
   }
 };
