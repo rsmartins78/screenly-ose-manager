@@ -1012,6 +1012,8 @@ function editUser() {
     data.password = $('[name=Dynamic-user_password]').val();
     data.group = $('[name=Dynamic-user_group]').val();
 
+    user = data.name;
+
     $.ajax({
         type: "PUT",
         url: "/api/v1/admin/users/" + id,
@@ -1027,10 +1029,19 @@ function editUser() {
         },
         success: function (data, status) {
             setTimeout(function () {
-                form.removeClass("loading");
-                $('.ui.modal').modal('hide');
+                // form.removeClass("loading");
+                // $('.ui.modal').modal('hide');
                 location.reload();
             }, 1500)
+            $.uiAlert({
+                textHead: 'Success',
+                text: 'The user ' + user + ' has been updated!',
+                bgcolor: '#19c3aa',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'checkmark box',
+                time: 2
+            });
         },
         error: function (data, status) {
             obj = JSON.parse(data.responseText);
