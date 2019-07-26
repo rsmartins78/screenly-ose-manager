@@ -16,7 +16,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets`;
 
-      const gettingAssets = await request
+      await request
         .get({
           url,
           headers: {
@@ -24,6 +24,10 @@ module.exports = {
             Authorization: authorization
           },
           timeout: 5000
+        })
+        .then(response => {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(response);
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -33,10 +37,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (gettingAssets !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(gettingAssets);
-      }
     }
   },
   // To retrieve the select asset from selected device
@@ -53,7 +53,7 @@ module.exports = {
     } else {
       const url = `http://${device}/api/v1.2/assets/${assetId}`;
 
-      const gettingOneAsset = await request
+      await request
         .get({
           url,
           headers: {
@@ -61,6 +61,10 @@ module.exports = {
             Authorization: authorization
           },
           timeout: 5000
+        })
+        .then(response => {
+          res.setHeader("Content-Type", "application/json");
+          res.status(200).send(response);
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -70,10 +74,6 @@ module.exports = {
             location: response.options.url
           });
         });
-      if (gettingOneAsset !== undefined) {
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(gettingOneAsset);
-      }
     }
   },
   // To insert asset to selected device
@@ -100,9 +100,9 @@ module.exports = {
 
     let user = req.userData.user;
     let action = "Add Asset to Device";
-    let message = `Added ${body.name} with path ${body.uri} and type ${
+    let message = `Added "${body.name}" with path "${body.uri}", type "${
       body.mimetype
-    } to device ${device}`;
+    }" and state "${body.is_active == 1 ? `active` : `inactive`}" to device ${device}`;
 
     if (!device) {
       res.status(400).send({
@@ -125,9 +125,9 @@ module.exports = {
           timeout: 5000
         })
         .then(resp => {
+          sendToAuditLog(user, action, message);
           res.setHeader("Content-Type", "application/json");
           res.status(200).send(resp);
-          sendToAuditLog(user, action, message);
         })
         .catch(response => {
           console.log("Error:", response.error, "on device", device);
@@ -222,9 +222,9 @@ module.exports = {
 
     let user = req.userData.user;
     let action = "Update Asset on Device";
-    let message = `Updated ${body.name}/${assetId} with path ${
+    let message = `Updated "${body.name}/${assetId}" with path "${
       body.uri
-    } and type ${body.mimetype} to device ${device}`;
+    }", type "${body.mimetype}" and state "${body.is_active == 1 ? `active` : `inactive`}" to device ${device}`;
 
     if (!device) {
       res.status(400).send({
@@ -269,7 +269,7 @@ module.exports = {
 
     let user = req.userData.user;
     let action = "Delete Asset from Device";
-    let message = `Deleted ${assetId} from device ${device}`;
+    let message = `Deleted "${assetId}" from device "${device}"`;
 
     if (!device) {
       res.status(400).send({

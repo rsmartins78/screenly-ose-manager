@@ -151,7 +151,7 @@ module.exports = {
     const deviceId = req.query.id;
     let user = req.userData.user;
     let action = "Delete Device";
-    let message = `Deleted device ID: ${deviceId} from system`;
+    let message = `Deleted device ID "${deviceId}" from system`;
     if (deviceId) {
       const resp = await dbclient
         .deleteDevice(deviceId)

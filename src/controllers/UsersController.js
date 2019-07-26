@@ -77,7 +77,7 @@ module.exports = {
     const user = req.body.username;
 
     let action = "User Update Password";
-    let message = `User ${data.user} updated his/her password.`;
+    let message = `User "${user}" updated his/her password.`;
 
     if (reqUser == user) {
       const old_password = req.body.old_password;
@@ -128,7 +128,7 @@ module.exports = {
       objUser.group = req.body.group;
 
       let action = "Admin Update User";
-      let message = `User ${objUser.name}/${objUser.username} was updated by admin "${req.userData.user}"`;
+      let message = `User "${objUser.name}/${objUser.username}" was updated by admin "${req.userData.user}"`;
 
       if (password != undefined) {
         objUser.password = req.body.password;
@@ -183,7 +183,7 @@ module.exports = {
       const result = await elastic.getUserById(userId);
 
       let action = "Admin Update User";
-      let message = `User ${result.hits.hits[0]._source.name}/${result.hits.hits[0]._source.username} was deleted by admin "${req.userData.user}"`;
+      let message = `User "${result.hits.hits[0]._source.name}/${result.hits.hits[0]._source.username}" was deleted by admin "${req.userData.user}"`;
 
       const result = await elastic.deleteUserById(userId);
       if (result && !result.status) {
