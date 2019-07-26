@@ -134,11 +134,11 @@ function getAll() {
                             ${obj._source.online == true ?
                             `<div class="tip right floated" data-tooltip="Device Online" data-position="left center" data-variation="basic">
                                 <div class="ui green right ribbon label">
-                                    <i class="play icon"></i>
+                                    <i class="check icon"></i>
                                 </div>
                             </div>` : `<div class="tip right floated" data-tooltip="Device Offline" data-position="left center" data-variation="basic">
                                                 <div class="ui red right ribbon label">
-                                                    <i class="pause icon"></i>
+                                                    <i class="times circle icon"></i>
                                                 </div>
                                             </div>`}
                             <div class="meta">
