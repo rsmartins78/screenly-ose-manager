@@ -180,9 +180,10 @@ module.exports = {
   async deleteUser(req, res) {
     if (req.userData.group === "admin") {
       const userId = req.params.id;
+      const userData = await elastic.getUserById(userId);
 
       let action = "Admin Update User";
-      let message = `User "${result.hits.hits[0]._source.name}/${result.hits.hits[0]._source.username}" was deleted by admin "${req.userData.user}"`;
+      let message = `User "${userData.hits.hits[0]._source.name}/${userData.hits.hits[0]._source.username}" was deleted by admin "${req.userData.user}"`;
 
       const result = await elastic.deleteUserById(userId);
       if (result && !result.status) {
