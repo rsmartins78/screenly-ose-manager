@@ -1,9 +1,24 @@
-FROM node:11.15
-
-ADD src/ lib/ public/ scripts/ semantic/ tests/ index.js app.js package.json semantic.json yarn.lock /app/
+FROM node:11.15 as base
 
 WORKDIR /app
 
-RUN npm install
+COPY package.json package-lock.json /app/
 
-ENTRYPOINT [ "npm", "run", "start" ]
+RUN npm install && npm install request
+
+FROM node:11.15 as final
+
+LABEL Authors="Indra Devops Core Team"
+
+WORKDIR /app
+
+COPY --from=base /app/node_modules /app/node_modules
+
+COPY lib/ /app/lib/
+COPY public/ /app/public/
+COPY scripts/ /app/scripts/
+COPY src/ /app/src/
+COPY tests/ /app/tests/
+COPY app.js index.js package.json /app/
+
+CMD [ "npm", "run", "start" ]

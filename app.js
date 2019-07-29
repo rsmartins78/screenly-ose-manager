@@ -12,7 +12,7 @@ const apiContext = process.env.CONTEXT || "/api/v1";
 const appContext = "/";
 
 //Ejs view config
-app.set("views", "src/views");
+app.set("views", "./src/views");
 app.set("view engine", "ejs");
 
 app.use(cors());

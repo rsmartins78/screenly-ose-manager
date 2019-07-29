@@ -438,5 +438,3 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/node,visualstudio
 
 upload_*
-
-package-lock.json
