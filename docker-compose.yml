@@ -1,0 +1,15 @@
+version: '2'
+services:
+  screenly-ose-manager:
+    image: ${IMAGE_TAG}
+    environment:
+      ELASTIC_HOST: http://db:9200
+      SECRET: ${APP_SECRET}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASS: ${ADMIN_PASS}
+    stdin_open: true
+    external_links:
+    - ELK-HOMOLOG/elasticsearch:db
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
