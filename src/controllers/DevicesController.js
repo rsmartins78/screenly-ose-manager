@@ -42,9 +42,27 @@ module.exports = {
       console.log(`New search without query at ${new Date()}`);
     } else if (query === undefined && group !== "admin") {
       const resp = await dbclient.listAllPerGroup(group);
+
+      for (i in resp.hits.hits) {
+        for (o in onlineStatus) {
+          if (resp.hits.hits[i]._id == onlineStatus[o].id) {
+            resp.hits.hits[i]._source.online = onlineStatus[o].online;
+          }
+        }
+      }
+
       sendResponse(resp);
     } else if (query && group !== "admin") {
       const resp = await dbclient.searchByQuery(query, group);
+
+      for (i in resp.hits.hits) {
+        for (o in onlineStatus) {
+          if (resp.hits.hits[i]._id == onlineStatus[o].id) {
+            resp.hits.hits[i]._source.online = onlineStatus[o].online;
+          }
+        }
+      }
+      
       sendResponse(resp);
       console.log(`New search with query ${query} at ${new Date()}`);
     } else {

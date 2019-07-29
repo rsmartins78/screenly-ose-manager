@@ -112,7 +112,6 @@ function getAll() {
         url: "/api/v1/devices",
         headers: { "Authorization": "Bearer " + session.token },
         success: function (data, status) {
-            console.log(data);
             $.each(data.hits, function (index, obj) {
                 container.append(
                     `<div class="card">
@@ -377,7 +376,6 @@ function checkAuth() {
         `<div class="ui sub header">${sessionStorage.getItem('name')}</div>
         Hello!!`
     )
-    console.log(tag);
     return session;
 }
 
