@@ -581,7 +581,7 @@ async function getAssets() {
                                                 </div>`}
                             </td>
                             <td class="center aligned action-group">
-                                <div onclick=deleteAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
+                                <div onclick=deleteAssetConfirm('${obj.asset_id}','${id}') class="table-action" data-tooltip="Delete asset" data-position="top center" data-variation="basic">
                                     <i class="large delete link icon"></i>
                                 </div>
                                 <div onclick=editAsset('${obj.asset_id}','${id}') class="table-action" data-tooltip="Edit asset" data-position="top center" data-variation="basic">
@@ -620,26 +620,45 @@ async function getAssets() {
     $('.menu .item').tab();
 }
 
+function deleteAssetConfirm (id, device_id) {
+    area = $('#confirm-area');
+    area.append(`<div id="confirm-modal" class="ui mini modal">
+                    <div class="header">Are you sure?</div>
+                    <div class="content">
+                        <p>Delete this user?</p>
+                    </div>
+                    <div class="actions">
+                        <div onclick="removeConfirm()" class="ui deny button">
+                            Cancel
+                        </div>
+                        <div onclick="deleteUser('${id}','${device_id}')" class="ui negative right labeled icon button">
+                            Delete
+                            <i class="trash alternate icon"></i>
+                        </div>
+                    </div>
+                </div>`)
+    setTimeout(() => {
+        $('.mini.modal').modal('setting', 'closable', false).modal('show');
+    }, 100);
+}
+
 async function deleteAsset(id, device_id) {
     session = {};
-    check = confirm('Are you sure to delete this asset ?')
-    if (check) {
-        session = checkAuth();
-        device = await getDevice(device_id, session.token);
-        ip = device.hits[0]._source.device_address;
-        $.ajax({
-            type: "DELETE",
-            url: "/api/v1/assets/" + ip + "/" + id,
-            headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
-            success: function (data, status) {
-                alert(data.message);
-            },
-            error: function (data, status) {
-                alert(data.message);
-                location.reload();
-            }
-        })
-    }
+    session = checkAuth();
+    device = await getDevice(device_id, session.token);
+    ip = device.hits[0]._source.device_address;
+    $.ajax({
+        type: "DELETE",
+        url: "/api/v1/assets/" + ip + "/" + id,
+        headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
+        success: function (data, status) {
+            alert(data.message);
+        },
+        error: function (data, status) {
+            alert(data.message);
+            location.reload();
+        }
+    })
 }
 
 async function editAsset(id, device_id) {
@@ -991,7 +1010,7 @@ async function getUsers() {
                                 <td>${obj._source.group}</td>
                                 <td class="center aligned">${obj._source.lastLoginAt}s</td>
                                 <td class="center aligned action-group">
-                                    <div onclick="deleteUser('${obj._id}')" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
+                                    <div onclick="deleteUserConfirm('${obj._id}')" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">
                                         <i class="large delete link icon"></i>
                                     </div>
                                     <div onclick="editUserModal('${obj._id}','${obj._source.name}','${obj._source.username}','${obj._source.group}')" class="table-action" data-tooltip="Edit User" data-position="top center" data-variation="basic">
@@ -1169,44 +1188,63 @@ function editUser() {
     })
 }
 
+function deleteUserConfirm (id) {
+    area = $('#confirm-area');
+    area.append(`<div id="confirm-modal" class="ui mini modal">
+                    <div class="header">Are you sure?</div>
+                    <div class="content">
+                        <p>Delete this user?</p>
+                    </div>
+                    <div class="actions">
+                        <div onclick="removeConfirm()" class="ui deny button">
+                            Cancel
+                        </div>
+                        <div onclick="deleteUser('${id}')" class="ui negative right labeled icon button">
+                            Delete
+                            <i class="trash alternate icon"></i>
+                        </div>
+                    </div>
+                </div>`)
+    setTimeout(() => {
+        $('.mini.modal').modal('setting', 'closable', false).modal('show');
+    }, 100);
+}
+
 function deleteUser(id) {
     session = {};
     session = checkAuth();
 
-    check = confirm('Are you sure to delete this user ?')
-    if (check) {
-        $.ajax({
-            type: "DELETE",
-            url: "/api/v1/admin/users/" + id,
-            headers: {
-                "Authorization": "Bearer " + session.token,
-            },
-            success: function (data, status) {
-                $.uiAlert({
-                    textHead: 'Success',
-                    text: 'The user ' + name + ' has been deleted!',
-                    bgcolor: '#19c3aa',
-                    textcolor: '#fff',
-                    position: 'top-right', // top And bottom ||  left / center / right
-                    icon: 'checkmark box',
-                    time: 2
-                });
-                location.reload();
-            },
-            error: function (data, status) {
-                obj = JSON.parse(data.responseText);
-                $.uiAlert({
-                    textHead: 'Error',
-                    text: 'An error has occured., ' + obj.message,
-                    bgcolor: '#DB2828',
-                    textcolor: '#fff',
-                    position: 'top-right', // top And bottom ||  left / center / right
-                    icon: 'remove circle',
-                    time: 2
-                });
-            }
-        })
-    }
+    $.ajax({
+        type: "DELETE",
+        url: "/api/v1/admin/users/" + id,
+        headers: {
+            "Authorization": "Bearer " + session.token,
+        },
+        success: function (data, status) {
+            $.uiAlert({
+                textHead: 'Success',
+                text: 'The user ' + name + ' has been deleted!',
+                bgcolor: '#19c3aa',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'checkmark box',
+                time: 2
+            });
+            location.reload();
+        },
+        error: function (data, status) {
+            obj = JSON.parse(data.responseText);
+            $.uiAlert({
+                textHead: 'Error',
+                text: 'An error has occured., ' + obj.message,
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
+        }
+    })
 }
 
 function addUser() {
