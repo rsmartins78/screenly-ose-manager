@@ -12,6 +12,7 @@ variables:
 
 stages:
   - build
+  - deploy
 
 docker-build:
   stage: build
@@ -19,7 +20,22 @@ docker-build:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker build $DOCKER_BUILD_ARGS -t $CI_REGISTRY_IMAGE .
   - docker push $CI_REGISTRY_IMAGE
-  # - docker build $DOCKER_BUILD_ARGS -t $IMAGE_TAG .
-  # - docker push $IMAGE_TAG  
-  # only: 
-  # - tags
+  - docker build $DOCKER_BUILD_ARGS -t $IMAGE_TAG .
+  - docker push $IMAGE_TAG  
+  only: 
+  - /.*homolog/
+  - /.*stable/
+
+rancher-deploy-in-homolog:
+  stage: deploy
+  image: tagip/rancher-cli
+  variables:
+    RANCHER_URL: $RANCHER_URL
+    RANCHER_ACCESS_KEY: $HOMOLOG_KEY
+    RANCHER_SECRET_KEY: $HOMOLOG_SECRET
+    RANCHER_ENVIRONMENT: HOMOLOG
+  script:
+    - rancher up --file docker-compose.yml -u -c -s $STACK_NAME --force-upgrade -d
+  only: 
+  - /.*homolog/
+

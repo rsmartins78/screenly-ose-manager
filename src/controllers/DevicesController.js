@@ -62,7 +62,7 @@ module.exports = {
           }
         }
       }
-      
+
       sendResponse(resp);
       console.log(`New search with query ${query} at ${new Date()}`);
     } else {
@@ -90,6 +90,7 @@ module.exports = {
     const payload = req.body;
 
     let user = req.userData.user;
+    let group = req.userData.group;
     let action = "Add Device";
     let message = `Added "${
       payload.device_name
@@ -97,7 +98,7 @@ module.exports = {
       payload.device_address
     }" to system`;
 
-    if (payload !== undefined) {
+    if (payload !== undefined && group == "admin") {
       const resp = await dbclient.addDevice(payload);
       if (resp.result === "created") {
         console.log("Success inserting data on DB");
@@ -109,12 +110,17 @@ module.exports = {
         res.setHeader("Content-Type", "application/json");
         res.status(resp.statusCode).send(resp.response);
       }
-    } else {
-      console.log("Body Empty Or Incomplete");
+    } else if (payload == undefined && group == "admin") {
       res.setHeader("Content-Type", "application/json");
       res.status(400).send({
         success: false,
         message: "Body empty or incomplete, please verify! "
+      });
+    } else {
+      res.setHeader("Content-Type", "application/json");
+      res.status(403).send({
+        success: false,
+        message: "You're not allowed to do this"
       });
     }
   },
@@ -125,6 +131,7 @@ module.exports = {
     const payload = req.body;
 
     let user = req.userData.user;
+    let group = req.userData.group;
     let action = "Update Device";
     let message = `Updated device "${deviceId}" with new values: Name: "${
       payload.device_name
@@ -132,7 +139,7 @@ module.exports = {
       payload.device_address
     }"`;
 
-    if (payload !== undefined) {
+    if (payload !== undefined && group == "admin") {
       try {
         const resp = await dbclient.updateDevice(deviceId, payload);
         if (resp.result === "updated") {
@@ -157,20 +164,25 @@ module.exports = {
         console.log(error);
         res.status(500).send(error);
       }
-    } else {
+    } else if (payload == undefined && group == "admin") {
       console.log("Body Empty or Incomplete");
       res
-        .status(500)
+        .status(400)
         .send({ success: false, message: "Body empty or incomplete." });
+    } else {
+      res
+        .status(403)
+        .send({ success: false, message: "You're not allowed to do this" });
     }
   },
   // To delete devices by ID
   async DeleteDevice(req, res) {
     const deviceId = req.query.id;
     let user = req.userData.user;
+    let group = req.userData.group;
     let action = "Delete Device";
     let message = `Deleted device ID "${deviceId}" from system`;
-    if (deviceId) {
+    if (deviceId !== undefined && group == "admin") {
       const resp = await dbclient
         .deleteDevice(deviceId)
         .then(function(resp) {
@@ -190,6 +202,14 @@ module.exports = {
             .status(resp.statusCode)
             .send({ success: false, message: resp.message });
         });
+    } else if (deviceId == undefined && group == "admin") {
+      res
+        .status(400)
+        .send({ success: false, message: "Please inform deviceId to delete" });
+    } else {
+      res
+        .status(403)
+        .send({ success: false, message: "You're not allowed to do this" });
     }
   }
 };
