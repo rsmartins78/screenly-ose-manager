@@ -150,7 +150,7 @@ footer {
     background-color: #57c5f0 !important;
     color: #fff !important;
     transition: all .5s cubic-bezier(0.55, -0.24, 0, 2.06) !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
 }
 
 .addbutton:hover {

@@ -150,8 +150,17 @@ function getAll() {
                         </div>
                         <div class="extra content">
                             <div class="ui two buttons">
-                                <div onclick="editModal('${obj._id}', '${obj._source.device_name}', '${obj._source.device_address}', '${obj._source.device_group}', '${obj._source.device_type}', '${obj._source.device_serial}')" class="ui basic green button">Edit</div>
-                                <div onclick="deleteDevice('${obj._id}', '${obj._source.device_name}')" class="ui basic red button">Delete</div>
+                            ${sessionStorage.getItem('group') == "admin" ?
+                                `<div onclick="editModal('${obj._id}', '${obj._source.device_name}', '${obj._source.device_address}', '${obj._source.device_group}', '${obj._source.device_type}', '${obj._source.device_serial}')" class="ui basic green button">Edit</div>
+                                <div onclick="deleteConfirm('${obj._id}', '${obj._source.device_name}')" class="ui basic red button">
+                                    Delete
+                                </div>`:`<div class="ui basic green button disabled">
+                                            Edit
+                                        </div>
+                                        <div class="ui basic red button disabled">
+                                            Delete
+                                        </div>`
+                            }
                             </div>
                         </div>
                     </div>`
@@ -195,10 +204,15 @@ function postDevice() {
 
 
     if (!data.device_address || !data.device_name || !data.device_group) {
-        $('#message').closest('.message').transition('fade');
-        setTimeout(function () {
-            $('#message').closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Error',
+            text: 'Please fill all the fields with "*"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     } else {
         $.ajax({
             type: "POST",
@@ -213,13 +227,30 @@ function postDevice() {
             success: function (data, status) {
                 form.removeClass("loading")
                 $('.ui.modal').modal('hide');
+                $.uiAlert({
+                    textHead: 'Success',
+                    text: 'Device has been successfuly added',
+                    bgcolor: '#19c3aa',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'checkmark box',
+                    time: 2
+                });
                 setTimeout(function () {
                     location.reload()
                 }, 1000)
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj.message);
+                $.uiAlert({
+                    textHead: 'Error',
+                    text: 'An error has occured, ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
                 $('.ui.modal').modal('hide');
             }
         })
@@ -239,6 +270,7 @@ function putDevice() {
     data.username = $('[name=Dynamic-device_username]').val()
     data.password = $('[name=Dynamic-device_password]').val()
     data.id = $('[name=Dynamic-device_id]').val();
+    name = data.device_name;
 
     if (!data.device_type) {
         data.device_type = "null"
@@ -254,10 +286,15 @@ function putDevice() {
     }
 
     if (!data.device_address || !data.device_name || !data.device_group) {
-        $('#message').closest('.message').transition('fade');
-        setTimeout(function () {
-            $('#message').closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Error',
+            text: 'Please fill fields with "*"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     } else {
         $.ajax({
             type: "PUT",
@@ -269,6 +306,15 @@ function putDevice() {
                 form.addClass("loading")
             },
             success: function (data, status) {
+                $.uiAlert({
+                    textHead: 'Success',
+                    text: 'Device ' + name + ' has been successfuly edited!',
+                    bgcolor: '#19c3aa',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'checkmark box',
+                    time: 2
+                });
                 form.removeClass("loading")
                 $('#editModal').modal('hide');
                 setTimeout(function () {
@@ -277,43 +323,86 @@ function putDevice() {
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj.message);
+                $.uiAlert({
+                    textHead: 'Error',
+                    text: 'An error has occured., ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
                 $('.ui.modal').modal('hide');
             }
         })
     }
 }
 
+function removeConfirm () {
+    modal = $('#confirm-modal');
+    $('.mini.modal').modal('setting', 'closable', false).modal('hide');
+    setTimeout(() => {
+        modal.remove();
+    }, 300);
+}
+
+function deleteConfirm(id, name) {
+    area = $('#confirm-area');
+    area.append(`<div id="confirm-modal" class="ui mini modal">
+                    <div class="header">Are you sure?</div>
+                    <div class="content">
+                        <p>Delete this device?</p>
+                    </div>
+                    <div class="actions">
+                        <div onclick="removeConfirm()" class="ui deny button">
+                            Cancel
+                        </div>
+                        <div onclick="deleteDevice('${id}','${name}')" class="ui negative right labeled icon button">
+                            Delete
+                            <i class="trash alternate icon"></i>
+                        </div>
+                    </div>
+                </div>`)
+    setTimeout(() => {
+        $('.mini.modal').modal('setting', 'closable', false).modal('show');
+    }, 100);
+}
+
 function deleteDevice(id, name) {
     session = {};
-    check = confirm('Are you sure to delete this device ?')
-    if (check) {
-        session = checkAuth()
-        $.ajax({
-            type: "DELETE",
-            url: "/api/v1/devices?id=" + id,
-            headers: { "Authorization": "Bearer " + session.token },
-            success: function (data, status) {
-                $.uiAlert({
-                    textHead: 'Success',
-                    text: 'The device ' + name + ' has been deleted!',
-                    bgcolor: '#19c3aa',
-                    textcolor: '#fff',
-                    position: 'top-right', // top And bottom ||  left / center / right
-                    icon: 'checkmark box',
-                    time: 2
-                });
-                setTimeout(function () {
-                    location.reload()
-                }, 2000)
-            },
-            error: function (data, status) {
-                obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj.message);
-                $('.ui.modal').modal('hide');
-            }
-        })
-    }
+    session = checkAuth()
+    $.ajax({
+        type: "DELETE",
+        url: "/api/v1/devices?id=" + id,
+        headers: { "Authorization": "Bearer " + session.token },
+        success: function (data, status) {
+            $.uiAlert({
+                textHead: 'Success',
+                text: 'The device ' + name + ' has been deleted!',
+                bgcolor: '#19c3aa',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'checkmark box',
+                time: 2
+            });
+            setTimeout(function () {
+                location.reload()
+            }, 2000)
+        },
+        error: function (data, status) {
+            obj = JSON.parse(data.responseText);
+            $.uiAlert({
+                textHead: 'Error',
+                text: 'An error has occured., ' + obj.message,
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
+            $('.ui.modal').modal('hide');
+        }
+    })
 }
 
 function checkRole () {
@@ -664,10 +753,15 @@ async function addAsset() {
     }
 
     if (!data.name || !data.uri || !data.duration) {
-        message.closest('.message').transition('fade');
-        setTimeout(function () {
-            message.closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Error',
+            text: 'Please fill all fields with "*"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     } else {
         if (urlParams.has('id')) {
             id = urlParams.get('id');
@@ -978,23 +1072,41 @@ function changePassword () {
                 setTimeout(function () {
                     form.removeClass("loading");
                     $('.ui.modal').modal('hide');
-                    successmessage.closest('.message').transition('fade');
-                    setTimeout(function () {
-                        successmessage.closest('.message').transition('fade')
-                    }, 2000);
+                    $.uiAlert({
+                        textHead: 'Success',
+                        text: 'Password has been changed!',
+                        bgcolor: '#19c3aa',
+                        textcolor: '#fff',
+                        position: 'top-right', // top And bottom ||  left / center / right
+                        icon: 'checkmark box',
+                        time: 2
+                    });
                 }, 1000)
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj);
+                $.uiAlert({
+                    textHead: 'Error',
+                    text: 'An error has occured., ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
                 $('.ui.modal').modal('hide');
             }
         })
     } else {
-        passmessage.closest('.message').transition('fade');
-        setTimeout(function () {
-            passmessage.closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Error',
+            text: 'Passwords dont match!',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     }
 }
 
@@ -1043,7 +1155,15 @@ function editUser() {
         },
         error: function (data, status) {
             obj = JSON.parse(data.responseText);
-            alert("An error occured, Status: " + obj);
+            $.uiAlert({
+                textHead: 'Error',
+                text: 'An error has occured., ' + obj.message,
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
             $('.ui.modal').modal('hide');
         }
     })
@@ -1062,12 +1182,28 @@ function deleteUser(id) {
                 "Authorization": "Bearer " + session.token,
             },
             success: function (data, status) {
-                alert("User " + name + " has been deleted")
+                $.uiAlert({
+                    textHead: 'Success',
+                    text: 'The user ' + name + ' has been deleted!',
+                    bgcolor: '#19c3aa',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'checkmark box',
+                    time: 2
+                });
                 location.reload();
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj);
+                $.uiAlert({
+                    textHead: 'Error',
+                    text: 'An error has occured., ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
             }
         })
     }
@@ -1104,27 +1240,54 @@ function addUser() {
                 success: function (data, status) {
                     setTimeout(function () {
                         form.removeClass("loading")
+                        $.uiAlert({
+                            textHead: 'Success',
+                            text: 'User has been sucessfully added!',
+                            bgcolor: '#19c3aa',
+                            textcolor: '#fff',
+                            position: 'top-right', // top And bottom ||  left / center / right
+                            icon: 'checkmark box',
+                            time: 2
+                        });
                         $('.ui.modal').modal('hide');
                         location.reload()
                     }, 2500)
                 },
                 error: function (data, status) {
                     obj = JSON.parse(data.responseText);
-                    alert("An error occured, Status: " + obj);
+                    $.uiAlert({
+                        textHead: 'Error',
+                        text: 'An error has occured., ' + obj,
+                        bgcolor: '#DB2828',
+                        textcolor: '#fff',
+                        position: 'top-right', // top And bottom ||  left / center / right
+                        icon: 'remove circle',
+                        time: 2
+                    });
                     $('.ui.modal').modal('hide');
                 }
             })
         } else {
-            passmessage.closest('.message').transition('fade');
-            setTimeout(function () {
-                passmessage.closest('.message').transition('fade')
-            }, 2000);
+            $.uiAlert({
+                textHead: 'Error',
+                text: 'Passwords dont match!',
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
         }
     } else {
-        $('#message').closest('.message').transition('fade');
-        setTimeout(function () {
-            $('#message').closest('.message').transition('fade')
-        }, 2000);
+        $.uiAlert({
+            textHead: 'Error',
+            text: 'Please fill the fields with "*"',
+            bgcolor: '#DB2828',
+            textcolor: '#fff',
+            position: 'top-right', // top And bottom ||  left / center / right
+            icon: 'remove circle',
+            time: 2
+        });
     }
 
 }
