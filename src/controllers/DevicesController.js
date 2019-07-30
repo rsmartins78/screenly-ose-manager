@@ -7,8 +7,9 @@ let onlineStatus = [];
 
 (async function() {
   onlineStatus = await checkOnlineDevices();
-  cron.schedule("1 * * * * *", async () => {
+  cron.schedule("*/30 * * * * *", async () => {
     onlineStatus = await checkOnlineDevices();
+    console.log("DEBUG INFO: 'Rechecked Devices Online Status'")
   });
 })();
 
