@@ -467,8 +467,8 @@ function checkAuth() {
         }
     })
     tag.append(
-        `<div class="ui sub header">${sessionStorage.getItem('name')}</div>
-        Hello!!`
+        `Hello!!
+        <div class="user-tag">${sessionStorage.getItem('name')}</div>`
     )
     return session;
 }
