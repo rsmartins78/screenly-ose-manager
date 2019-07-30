@@ -1,6 +1,6 @@
 const { Client } = require("elasticsearch");
 const { encryptData } = require("../../lib/encrypt");
-const { getTime } = require("../../lib/getTime")
+const { getTime } = require("../../lib/getTime");
 
 const client = new Client({
   host: process.env.ELASTIC_HOST || "http://localhost:9200/",
@@ -8,10 +8,6 @@ const client = new Client({
   maxRetries: 5,
   requestTimeout: 60000
 });
-
-// client.cluster.health({}, function(err, health) {
-//   console.log("\n-- ElasticSearch Health --\n", health, "\n -- End --\n");
-// });
 
 async function checkFirstAdmin() {
   const passwd = await encryptData(process.env.ADMIN_PASS || "admin");
@@ -77,80 +73,111 @@ async function checkFirstDevice() {
   }
 }
 
-
-
 // Check if screenly devices indice exists, if not, create it
-client.indices.exists({ index: "screenly" }, function(error, exists) {
-  if (error) {
-    throw new Error(error.message);
-  }
-  if (exists === false) {
-    client.indices.create(
-      {
-        index: "screenly"
-      },
-      (err, res) => {
-        if (err) {
-          throw new Error(err);
-        } else {
-          checkFirstDevice();
-          console.log("DB: Devices Structure OK");
-        }
+client.indices.exists(
+  {
+    index: "screenly",
+    body: {
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 0
       }
-    );
-  } else {
-    checkFirstDevice();
-    console.log("Devices Structure Ok");
+    }
+  },
+  function(error, exists) {
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (exists === false) {
+      client.indices.create(
+        {
+          index: "screenly"
+        },
+        (err, res) => {
+          if (err) {
+            throw new Error(err);
+          } else {
+            checkFirstDevice();
+            console.log("DB: Devices Structure OK");
+          }
+        }
+      );
+    } else {
+      checkFirstDevice();
+      console.log("Devices Structure Ok");
+    }
   }
-});
+);
 
 // Check if screenly users indice exists, if not, create it
-client.indices.exists({ index: "screenly-users" }, (error, result) => {
-  if (error) {
-    throw new Error(error.message);
-  }
-  if (result === false) {
-    client.indices.create(
-      {
-        index: "screenly-users"
-      },
-      (exception, res) => {
-        if (exception) {
-          throw new Error(exception);
-        } else {
-          checkFirstAdmin();
-          console.log("DB: Users Structure OK");
-        }
+client.indices.exists(
+  {
+    index: "screenly-users",
+    body: {
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 0
       }
-    );
-  } else {
-    checkFirstAdmin();
-    console.log("Users Structure Ok");
+    }
+  },
+  (error, result) => {
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (result === false) {
+      client.indices.create(
+        {
+          index: "screenly-users"
+        },
+        (exception, res) => {
+          if (exception) {
+            throw new Error(exception);
+          } else {
+            checkFirstAdmin();
+            console.log("DB: Users Structure OK");
+          }
+        }
+      );
+    } else {
+      checkFirstAdmin();
+      console.log("Users Structure Ok");
+    }
   }
-});
+);
 
 // Check if audit log indice exists, if not, create it
-client.indices.exists({ index: "screenly-auditlog" }, (error, result) => {
-  if (error) {
-    throw new Error(error.message);
-  }
-  if (result === false) {
-    client.indices.create(
-      {
-        index: "screenly-auditlog"
-      },
-      (exception, res) => {
-        if (exception) {
-          throw new Error(exception);
-        } else {
-          checkFirstAdmin();
-          console.log("DB: Audit Log Structure OK");
-        }
+client.indices.exists(
+  {
+    index: "screenly-auditlog",
+    body: {
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 0
       }
-    );
-  } else {
-    console.log("Audit Log Structure Ok");
+    }
+  },
+  (error, result) => {
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (result === false) {
+      client.indices.create(
+        {
+          index: "screenly-auditlog"
+        },
+        (exception, res) => {
+          if (exception) {
+            throw new Error(exception);
+          } else {
+            checkFirstAdmin();
+            console.log("DB: Audit Log Structure OK");
+          }
+        }
+      );
+    } else {
+      console.log("Audit Log Structure Ok");
+    }
   }
-});
+);
 
 module.exports = client;
