@@ -112,6 +112,12 @@ function getAll() {
         url: "/api/v1/devices",
         headers: { "Authorization": "Bearer " + session.token },
         success: function (data, status) {
+            home.append(`${sessionStorage.getItem('group') == "admin" ?
+                `<button onclick="bounceButton()" class="addbutton circular large ui icon button">
+                        <i class="large icon plus"></i>
+                </button>` : ``
+                } `
+            );
             $.each(data.hits, function (index, obj) {
                 container.append(
                     `<div class="card">
@@ -148,18 +154,17 @@ function getAll() {
                                 ${obj._source.device_type}
                             </div>
                         </div>
+                        
+                            ${sessionStorage.getItem('group') == "admin" ?
+                                `
                         <div class="extra content">
                             <div class="ui two buttons">
-                            ${sessionStorage.getItem('group') == "admin" ?
-                                `<div onclick="editModal('${obj._id}', '${obj._source.device_name}', '${obj._source.device_address}', '${obj._source.device_group}', '${obj._source.device_type}', '${obj._source.device_serial}')" class="ui basic green button">Edit</div>
+                                <div onclick="editModal('${obj._id}', '${obj._source.device_name}', '${obj._source.device_address}', '${obj._source.device_group}', '${obj._source.device_type}', '${obj._source.device_serial}')" class="ui basic green button">Edit</div>
                                 <div onclick="deleteConfirm('${obj._id}', '${obj._source.device_name}')" class="ui basic red button">
                                     Delete
-                                </div>`:`<div class="ui basic green button disabled">
-                                            Edit
-                                        </div>
-                                        <div class="ui basic red button disabled">
-                                            Delete
-                                        </div>`
+                                </div>
+                                </div>
+                        </div>`:``
                             }
                             </div>
                         </div>
@@ -625,13 +630,13 @@ function deleteAssetConfirm (id, device_id) {
     area.append(`<div id="confirm-modal" class="ui mini modal">
                     <div class="header">Are you sure?</div>
                     <div class="content">
-                        <p>Delete this user?</p>
+                        <p>Delete this asset?</p>
                     </div>
                     <div class="actions">
                         <div onclick="removeConfirm()" class="ui deny button">
                             Cancel
                         </div>
-                        <div onclick="deleteUser('${id}','${device_id}')" class="ui negative right labeled icon button">
+                        <div onclick="deleteAsset('${id}','${device_id}')" class="ui negative right labeled icon button">
                             Delete
                             <i class="trash alternate icon"></i>
                         </div>
@@ -652,11 +657,32 @@ async function deleteAsset(id, device_id) {
         url: "/api/v1/assets/" + ip + "/" + id,
         headers: { "Authorization": "Bearer " + session.token, "DeviceAuth": "Basic " + btoa(device.hits[0]._source.username + ':' + device.hits[0]._source.password) },
         success: function (data, status) {
-            alert(data.message);
+            $.uiAlert({
+                textHead: 'Success',
+                text: 'The asset has been deleted!',
+                bgcolor: '#19c3aa',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'checkmark box',
+                time: 2
+            });
+            setTimeout(function () {
+                location.reload()
+            }, 2000)
         },
         error: function (data, status) {
-            alert(data.message);
-            location.reload();
+            $.uiAlert({
+                textHead: 'Failed to delete asset',
+                text: 'Please try again later.',
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
+            setTimeout(function () {
+                location.reload()
+            }, 2000)
         }
     })
 }
@@ -721,6 +747,15 @@ async function sendEditedAsset(asset_id) {
             },
             success: function (data, status) {
                 form.removeClass("loading")
+                $.uiAlert({
+                    textHead: 'Success',
+                    text: 'The asset has been updated!',
+                    bgcolor: '#19c3aa',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'checkmark box',
+                    time: 2
+                });
                 $('.ui.modal').modal('hide');
                 setTimeout(function () {
                     location.reload()
@@ -728,7 +763,15 @@ async function sendEditedAsset(asset_id) {
             },
             error: function (data, status) {
                 obj = JSON.parse(data.responseText);
-                alert("An error occured, Status: " + obj);
+                $.uiAlert({
+                    textHead: 'Failed to update asset',
+                    text: 'Please try again later. Error: ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
                 $('.ui.modal').modal('hide');
             }
         })
@@ -806,13 +849,30 @@ async function addAsset() {
                 success: function (data, status) {
                     form.removeClass("loading")
                     $('.ui.modal').modal('hide');
+                    $.uiAlert({
+                        textHead: 'Success',
+                        text: 'The asset has been added!',
+                        bgcolor: '#19c3aa',
+                        textcolor: '#fff',
+                        position: 'top-right', // top And bottom ||  left / center / right
+                        icon: 'checkmark box',
+                        time: 2
+                    });
                     setTimeout(function () {
                         location.reload()
                     }, 1000)
                 },
                 error: function (data, status) {
                     obj = JSON.parse(data.responseText);
-                    alert("An error occured, Status: " + obj);
+                    $.uiAlert({
+                        textHead: 'Failed to add asset',
+                        text: 'Please try again later. Error: ' + obj.message,
+                        bgcolor: '#DB2828',
+                        textcolor: '#fff',
+                        position: 'top-right', // top And bottom ||  left / center / right
+                        icon: 'remove circle',
+                        time: 2
+                    });
                     $('.ui.modal').modal('hide');
                 }
             })
@@ -842,7 +902,6 @@ async function assetToggle(asset_id) {
             },
             error: function (data, status) {
                 obj = JSON.parse(data.message);
-                alert("An error occured, Status: " + obj);
             }
         })
         if (obj.is_enabled == 1) {
@@ -854,8 +913,6 @@ async function assetToggle(asset_id) {
 
         delete obj.asset_id;
         delete obj.is_processing;
-
-        console.log(obj);
 
         $.ajax({
             type: "PUT",
@@ -875,7 +932,15 @@ async function assetToggle(asset_id) {
             },
             error: function (data, status) {
                 obj = JSON.parse(data.message);
-                alert("An error occured, Status: " + obj);
+                $.uiAlert({
+                    textHead: 'Failed to change state of asset',
+                    text: 'Please try again later. Error: ' + obj.message,
+                    bgcolor: '#DB2828',
+                    textcolor: '#fff',
+                    position: 'top-right', // top And bottom ||  left / center / right
+                    icon: 'remove circle',
+                    time: 2
+                });
             }
         })
         el.removeClass("disabled");
@@ -921,7 +986,15 @@ async function addFileAsset() {
             obj = data;
         },
         error: function (data) {
-            alert("An error occured, Status: " + "Error");
+            $.uiAlert({
+                textHead: 'Failed to send file to device',
+                text: 'Please try again later. Error: ' + obj.message,
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
         }
     });
 
@@ -956,13 +1029,30 @@ async function addFileAsset() {
         success: function (data, status) {
             form.removeClass("loading")
             $('.ui.modal').modal('hide');
+            $.uiAlert({
+                textHead: 'Success',
+                text: 'The asset has been added!',
+                bgcolor: '#19c3aa',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'checkmark box',
+                time: 2
+            });
             setTimeout(function () {
                 location.reload()
             }, 1000)
         },
         error: function (data, status) {
             obj = JSON.parse(data.responseText);
-            alert("An error occured, Status: " + obj);
+            $.uiAlert({
+                textHead: 'Failed to add asset',
+                text: 'Please try again later. Error: ' + obj.message,
+                bgcolor: '#DB2828',
+                textcolor: '#fff',
+                position: 'top-right', // top And bottom ||  left / center / right
+                icon: 'remove circle',
+                time: 2
+            });
             $('.ui.modal').modal('hide');
         }
     })
