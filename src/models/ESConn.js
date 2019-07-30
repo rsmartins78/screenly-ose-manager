@@ -76,13 +76,7 @@ async function checkFirstDevice() {
 // Check if screenly devices indice exists, if not, create it
 client.indices.exists(
   {
-    index: "screenly",
-    body: {
-      settings: {
-        number_of_shards: 1,
-        number_of_replicas: 0
-      }
-    }
+    index: "screenly"
   },
   function(error, exists) {
     if (error) {
@@ -91,7 +85,13 @@ client.indices.exists(
     if (exists === false) {
       client.indices.create(
         {
-          index: "screenly"
+          index: "screenly",
+          body: {
+            settings: {
+              number_of_shards: 1,
+              number_of_replicas: 0
+            }
+          }
         },
         (err, res) => {
           if (err) {
@@ -112,13 +112,7 @@ client.indices.exists(
 // Check if screenly users indice exists, if not, create it
 client.indices.exists(
   {
-    index: "screenly-users",
-    body: {
-      settings: {
-        number_of_shards: 1,
-        number_of_replicas: 0
-      }
-    }
+    index: "screenly-users"
   },
   (error, result) => {
     if (error) {
@@ -127,7 +121,13 @@ client.indices.exists(
     if (result === false) {
       client.indices.create(
         {
-          index: "screenly-users"
+          index: "screenly-users",
+          body: {
+            settings: {
+              number_of_shards: 1,
+              number_of_replicas: 0
+            }
+          }
         },
         (exception, res) => {
           if (exception) {
@@ -148,13 +148,7 @@ client.indices.exists(
 // Check if audit log indice exists, if not, create it
 client.indices.exists(
   {
-    index: "screenly-auditlog",
-    body: {
-      settings: {
-        number_of_shards: 1,
-        number_of_replicas: 0
-      }
-    }
+    index: "screenly-auditlog"
   },
   (error, result) => {
     if (error) {
@@ -163,7 +157,13 @@ client.indices.exists(
     if (result === false) {
       client.indices.create(
         {
-          index: "screenly-auditlog"
+          index: "screenly-auditlog",
+          body: {
+            settings: {
+              number_of_shards: 1,
+              number_of_replicas: 0
+            }
+          }
         },
         (exception, res) => {
           if (exception) {
