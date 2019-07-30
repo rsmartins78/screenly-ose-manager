@@ -429,6 +429,7 @@ function checkAuth() {
     var session = {}
     var nextLocation = window.location.pathname + window.location.search;
     var tag = $('#user_message');
+    var tagContent = tag.find("#user_content");
     if (!token) {
         session.valid = false;
         session.token = undefined;
@@ -466,10 +467,12 @@ function checkAuth() {
             sessionStorage.setItem('name', "User not founded");
         }
     })
-    tag.append(
-        `<div class="ui sub header">${sessionStorage.getItem('name')}</div>
-        Hello!!`
-    )
+    if (tagContent.length == 0) {
+        tag.append(
+            `Hello!!
+            <div id="user_content" class="ui sub header">${sessionStorage.getItem('name')}</div>`
+        )
+    }
     return session;
 }
 
@@ -575,6 +578,8 @@ async function getAssets() {
                             </td>
                             <td>${obj.mimetype}</td>
                             <td>${obj.duration}s</td>
+                            <td>${moment(obj.start_date).format('MM/DD/YYYY, HH:MM:SS')}s</td>
+                            <td>${moment(obj.end_date).format('MM/DD/YYYY, HH:MM:SS')}s</td>
                             <td class="center aligned">
                                 ${obj.is_active == 1 ?
                             `<div onclick="assetToggle('${obj.asset_id}')" class="ui toggle checkbox checked">
@@ -608,6 +613,8 @@ async function getAssets() {
                 containerFoot.append(
                     `<tr>
                         <th class="center aligned">${count} assets</th>
+                        <th></th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
