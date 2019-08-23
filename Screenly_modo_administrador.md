@@ -1,15 +1,15 @@
-#Screenly OSE Manager
+# Screenly OSE Manager
 
-##Summary 
+## Summary 
 
-  - [Gestão de Devices](#section-id-9)
-    - [Adicionar Device](#section-id-11)
-    - [Editar Device](#section-id-23)
-    - [Excluir Device](#section-id-33)
-  - [Usuários do Sistema](#section-id-44)
-    - [Adicionar usuário](#section-id-46)
-    - [Editar usuário](#section-id-60)
-    - [Excluir usuário](#section-id-73)
+  - [Gestão de Devices](#gestão-de-devices)
+    - [Adicionar Device](#adicionar-device)
+    - [Editar Device](#editar-device)
+    - [Excluir Device](#excluir-device)
+  - [Usuários do Sistema](#usuários-do-sistema)
+    - [Adicionar usuário](#adicionar-usuário)
+    - [Editar usuário](#editar-usuário)
+    - [Excluir usuário](#excluir-usuário)
   
 
 

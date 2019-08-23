@@ -1,14 +1,14 @@
-#Screenly OSE Manager
+# Screenly OSE Manager
 
-##Summary 
+## Summary 
 
-  - [Assets(Conteúdos) dos Devices](#section-id-9)
-    - [Inclusão de assets](#section-id-11)
-    - [Editar assets](#section-id-30)
-    - [Ativar/Desativar assets](#section-id-44)
-    - [Excluir assets](#section-id-54)
-  - [Configuração do Usuário](#section-id-68)
-    - [Alteração de senha](#section-id-70)
+  - [Assets(Conteúdos) dos Devices](#assetsconteúdos-dos-devices)
+    - [Inclusão de assets](#inclusão-de-assets)
+    - [Editar assets](#editar-assets)
+    - [Ativar/Desativar assets](#ativardesativar-assets)
+    - [Excluir assets](#excluir-assets)
+  - [Configuração do Usuário](#configuração-do-usuário)
+    - [Alteração de senha](#alteração-de-senha)
   
 
 
