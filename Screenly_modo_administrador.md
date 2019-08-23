@@ -1,4 +1,19 @@
-﻿# Como utilizar Screenly OSE Manager
+#Screenly OSE Manager
+
+##Summary 
+
+  - [Gestão de Devices](#section-id-9)
+    - [Adicionar Device](#section-id-11)
+    - [Editar Device](#section-id-23)
+    - [Excluir Device](#section-id-33)
+  - [Usuários do Sistema](#section-id-44)
+    - [Adicionar usuário](#section-id-46)
+    - [Editar usuário](#section-id-60)
+    - [Excluir usuário](#section-id-73)
+  
+
+
+## Como utilizar Screenly OSE Manager
 
 Esta aplicação lhe permite gerenciar os Assets(conteúdos) de multiplos devices através de uma única plataforma.  
 
@@ -6,7 +21,11 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/login.png)
 
+<div id='section-id-9'/>
+
 ## Gestão de Devices
+
+<div id='section-id-11'/>
 
 ### Adicionar Device
 
@@ -20,6 +39,8 @@ Acesse a home page do Screenly OSE Manager:
 
 > Obs: Quando for adicionar um Device demora um pouco para aparecer os status "**online**", caso não atualize e continue "**offline**" os campos de credenciais estão errados.
 
+<div id='section-id-23'/>
+
 ### Editar Device
 - Na pagina inicial, escolha qual Device deseja alterar.  
 
@@ -29,6 +50,8 @@ Acesse a home page do Screenly OSE Manager:
 - Após preencher clique em "**Save**".  
 
 ![enter image description here](docs/edit_modal_device.png)
+
+<div id='section-id-33'/>
 
 ### Excluir Device
 
@@ -41,7 +64,11 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/delete_modal_device.png)  
 
+<div id='section-id-44'/>
+
 ## Usuários do Sistema
+
+<div id='section-id-46'/>
 
 ### Adicionar usuário
 
@@ -57,6 +84,8 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/add_modal_user.png)
  
+<div id='section-id-60'/>
+
 ### Editar usuário
 - Clique no botão no canto esquerdo superior "**Manage Users**";  
 
@@ -69,6 +98,8 @@ Acesse a home page do Screenly OSE Manager:
 - Altere os campos desejados e clique em "**Save**".
 
 ![enter image description here](docs/edit_modal_user.png)
+
+<div id='section-id-73'/>
 
 ### Excluir usuário
 

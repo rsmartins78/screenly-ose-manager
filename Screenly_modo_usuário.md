@@ -1,4 +1,18 @@
-﻿# Como utilizar Screenly OSE Manager
+#Screenly OSE Manager
+
+##Summary 
+
+  - [Assets(Conteúdos) dos Devices](#section-id-9)
+    - [Inclusão de assets](#section-id-11)
+    - [Editar assets](#section-id-30)
+    - [Ativar/Desativar assets](#section-id-44)
+    - [Excluir assets](#section-id-54)
+  - [Configuração do Usuário](#section-id-68)
+    - [Alteração de senha](#section-id-70)
+  
+
+
+## Como utilizar Screenly OSE Manager
 
 Esta aplicação lhe permite criar e alterar Assets(conteúdos) dos Devices.  
 Acesse a home page do Screenly OSE Manager:
@@ -6,7 +20,11 @@ Acesse a home page do Screenly OSE Manager:
 **Link**: https://screenlymanager.cloudapps.indraweb.net/
  ![enter image description here](docs/login.png)
  
+<div id='section-id-9'/>
+
 ## Assets(Conteúdos) dos Devices
+
+<div id='section-id-11'/>
 
 ### Inclusão de assets
 
@@ -27,6 +45,8 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/file_modal_asset.png)
 
+<div id='section-id-30'/>
+
 ### Editar assets
 
 - Entre na página do Device escolhido.
@@ -41,6 +61,8 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/edit_modal_asset.png)
 
+<div id='section-id-44'/>
+
 ### Ativar/Desativar assets
  
 - Entre na página do Device escolhido;
@@ -50,6 +72,8 @@ Acesse a home page do Screenly OSE Manager:
 - Localize a Asset(conteúdo) que deseja alterar os status, na coluna "**Status**" pode ativar e desativar a Asset.
 
 ![enter image description here](docs/status_asset.png)
+
+<div id='section-id-54'/>
 
 ### Excluir assets
 
@@ -65,7 +89,11 @@ Acesse a home page do Screenly OSE Manager:
 
 ![enter image description here](docs/delete_modal_asset.png)
 
+<div id='section-id-68'/>
+
 ## Configuração do Usuário
+
+<div id='section-id-70'/>
 
 ### Alteração de senha
 
