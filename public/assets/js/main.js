@@ -913,8 +913,10 @@ async function assetToggle(asset_id) {
         })
         if (obj.is_enabled == 1) {
             obj.is_enabled = 0;
+            obj.is_active = 0;
         } else {
             obj.is_enabled = 1;
+            obj.is_active = 1;
         }
 
 
