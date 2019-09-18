@@ -10,11 +10,6 @@
     "lint": "eslint \"**/*.js\"",
     "lint:fix": "eslint \"**/*.js\" -o ./lint.html -f html --fix"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint:fix"
-    }
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
