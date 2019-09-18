@@ -4,14 +4,21 @@
   "description": "A opensource manager to Screenly-Ose",
   "main": "index.js",
   "scripts": {
-    "dev": "ELASTIC_HOST=http://10.130.214.118:9200 nodemon index.js",
+    "dev": "ELASTIC_HOST=http://10.130.214.118:9200 nodemon",
     "start": "node index.js",
+    "start:prod": "pm2 start index.js --name screenly",
     "lint": "eslint \"**/*.js\"",
     "lint:fix": "eslint \"**/*.js\" -o ./lint.html -f html --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint:fix"
+    }
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "activedirectory": "^0.7.2",
     "balanced-match": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",

@@ -28,7 +28,7 @@ module.exports = {
           .status(400)
           .send({ success: false, message: "user already exists on system" });
       } else {
-        const resultUser = await elastic.createUser({ data });
+        const resultUser = await elastic.createUser(data);
         // Creating user on database
         if (resultUser.result === "created") {
           console.log("Novo Usuário Criado: ", data.user);
@@ -56,7 +56,7 @@ module.exports = {
     if (req.userData.group === "admin") {
       const result = await elastic.getUsers();
 
-      if (result.hits.total >= 1) {
+      if (result.hits.hits.length) {
         for (i in result.hits.hits) {
           delete result.hits.hits[i]._source.password; // removed password before send response
         }

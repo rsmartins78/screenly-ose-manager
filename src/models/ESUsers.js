@@ -23,18 +23,19 @@ module.exports = {
     });
     return result;
   },
-  async createUser({data}) {
-    const { name, user, password, group } = data
+  async createUser(data) {
+    const { name, user, password, group, authType } = data
     const time = await getTime();
-    const new_passwd = await encryptData(password)
+    const new_passwd = await encryptData(password || '')
     const result = await client.index({
       index: "screenly-users",
       type: "users",
       body: {
-        name: name,
+        name,
         username: user,
         password: new_passwd,
-        group: group,
+        group,
+        authType: authType || 'internal',
         createdAt: time,
         lastLoginAt: time
       }
@@ -175,16 +176,43 @@ module.exports = {
     return resultUpdate;
   },
   async getUsers() {
-    const result = await client.search({
+    let responseAll = {};
+    responseAll["hits"] = {};
+    responseAll.hits.hits = [];
+    const responseQueue = [];
+
+    responseQueue.push(
+      await client.search({
       index: "screenly-users",
       type: "users",
+      scroll: "30s",
       body: {
         query: {
           match_all: {}
         }
       }
-    });
-    return result;
+    })
+    );
+
+    while (responseQueue.length) {
+      const response = responseQueue.shift();
+
+      responseAll.hits.hits = responseAll.hits.hits.concat(response.hits.hits);
+
+      if (response.hits.total == responseAll.hits.hits.length) {
+        break;
+      }
+
+      // get the next response if there are more to fetch
+      responseQueue.push(
+        await client.scroll({
+          scrollId: response._scroll_id,
+          scroll: "30s"
+        })
+      );
+    }
+
+    return responseAll;
   },
   async getUserById(id) {
     const result = await client.search({
@@ -198,6 +226,7 @@ module.exports = {
         }
       }
     });
+
     return result;
   },
   async deleteUserById(id) {

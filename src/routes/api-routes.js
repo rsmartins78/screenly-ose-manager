@@ -20,7 +20,6 @@ routes.post('/admin/users', authMiddleware, UsersController.createUser); // Cada
 routes.put('/admin/users/:id', authMiddleware, UsersController.updateUser); // Editar usuário
 routes.delete('/admin/users/:id', authMiddleware, UsersController.deleteUser);
 
-
 // To get devices
 routes.get('/devices', authMiddleware, DevicesController.GetDevices);
 // To one device

@@ -15,6 +15,7 @@ let onlineStatus = [];
 
 module.exports = {
   async GetDevices(req, res) {
+    console.table(req.userData);
     const group = req.userData.group;
     const query = req.query.query;
     function sendResponse(value) {
@@ -43,7 +44,7 @@ module.exports = {
       console.log(`New search without query at ${new Date()}`);
     } else if (query === undefined && group !== "admin") {
       const resp = await dbclient.listAllPerGroup(group);
-
+    
       for (i in resp.hits.hits) {
         for (o in onlineStatus) {
           if (resp.hits.hits[i]._id == onlineStatus[o].id) {
