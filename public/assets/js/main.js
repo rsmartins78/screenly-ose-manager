@@ -98,11 +98,17 @@ async function getDevice(id, token) {
     return obj;
 }
 
+function checkAuthType() {
+    if (sessionStorage.getItem('authType') !== 'internal') {
+        document.querySelector('#changePassButton').style.display = 'none';
+    }
+}
 
 function getAll() {
     session = {};
     home = $('#body-home');
     session = checkAuth();
+    checkAuthType();
     if (session.valid === true) {
         home.removeClass("auth-hidden");
     }
@@ -462,6 +468,7 @@ function checkAuth() {
         async: false,
         success: function (data, status) {
             sessionStorage.setItem('name', data.name);
+            sessionStorage.setItem('authType', data.authType);
         },
         error: function () {
             sessionStorage.setItem('name', "User not founded");
@@ -469,8 +476,7 @@ function checkAuth() {
     })
     if (tagContent.length == 0) {
         tag.append(
-            `Hello!!
-            <div id="user_content" class="ui sub header">${sessionStorage.getItem('name')}</div>`
+            `Hello ! <div id="user_content" class="ui sub header">${sessionStorage.getItem('name')}</div>`
         )
     }
     return session;
@@ -1073,6 +1079,7 @@ async function getUsers() {
     session = {};
     home = $('#body-home');
     session = checkAuth();
+    checkAuthType();
     if (session.valid === true) {
         home.removeClass("auth-hidden");
     }
@@ -1107,6 +1114,7 @@ async function getUsers() {
                                 </td>
                                 <td>${obj._source.name}</td>
                                 <td>${obj._source.group}</td>
+                                <td>${obj._source.authType ||  'internal'}</td>
                                 <td class="center aligned">${obj._source.lastLoginAt}s</td>
                                 <td class="center aligned action-group">
                                     <div onclick="deleteUserConfirm('${obj._id}')" class="table-action" data-tooltip="Delete User" data-position="top center" data-variation="basic">

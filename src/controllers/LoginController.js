@@ -41,25 +41,24 @@ async function adLogin(req, res, dbData, existsOnDb = true) {
         if(auth) {
             if (existsOnDb) {
               const { _id: userId } = dbData.hits.hits[0];
-              const { group } = dbData.hits.hits[0]._source;
+              const { group, authType } = dbData.hits.hits[0]._source;
               const token = await generateToken({ userId, user: username, group });
               elastic.updateLoginAt(username);
-              res.send({ success: true, token, userId, group, user: username });
+              res.send({ success: true, token, userId, group, user: username, authType });
             } else {
               const { displayName: name } = await findUserByUserNameOnAd(username);
               const resultUser = await elastic.createUser({
                 name,
                 user: username,
                 group: 'users',
-                authType: 'ldap',
+                authType: 'external',
                 createdAt: getTime(),
                 lastLoginAt: getTime()
                 });
 
               if (resultUser.result === "created") {
-                console.table(resultUser);
                 const { _id: userId, user: username, group } = resultUser; 
-                const token = await generateToken({ userId, user: username, group: 'users' });
+                const token = await generateToken({ userId, user: username, group });
                 console.log("Novo Usuário Criado: ", username);
                 sendToAuditLog(username, "Add User", `Added ${username} to group users`);
                 res.send({ success: true, token, userId, group: 'users', user: username });

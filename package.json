@@ -4,7 +4,7 @@
   "description": "A opensource manager to Screenly-Ose",
   "main": "index.js",
   "scripts": {
-    "dev": "ELASTIC_HOST=http://10.130.214.118:9200 nodemon",
+    "dev": "nodemon",
     "start": "node index.js",
     "start:prod": "pm2 start index.js --name screenly",
     "lint": "eslint \"**/*.js\"",

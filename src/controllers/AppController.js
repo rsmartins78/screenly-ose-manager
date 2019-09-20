@@ -1,18 +1,17 @@
-
 module.exports = {
   async Login(req, res) {
-    res.render('index', {page:'Login', menuId:'login'});
+    res.render("index", { page: "Login", menuId: "login" });
   },
   async Home(req, res) {
-    res.render('home', {page:'Home', menuId:'home'});
+    res.render("home", { page: "Home", menuId: "home" });
   },
   async Redirect(req, res) {
-      res.redirect('/home')
+    res.redirect("/home");
   },
   async Assets(req, res) {
-    res.render('assets', {page:'Assets', menuId:'assets'});
+    res.render("assets", { page: "Assets", menuId: "assets" });
   },
   async Users(req, res) {
-    res.render('users', {page:'Users', menuId:'users'});
+    res.render("users", { page: "Users", menuId: "users" });
   }
-}
+};
