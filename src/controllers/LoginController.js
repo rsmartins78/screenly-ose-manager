@@ -92,7 +92,6 @@ module.exports = {
   async login(req, res) {
     const { username, password } = req.body;
     const result = await elastic.validateLogin(username);
-    console.table(result);
     if (result && result.hits.total >= 1) {
       const authType = result.hits.hits[0]._source.authType || '';
       if(authType === 'ldap') {

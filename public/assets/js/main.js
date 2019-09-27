@@ -99,6 +99,10 @@ async function getDevice(id, token) {
 }
 
 function checkAuthType() {
+    if(sessionStorage.getItem('authType') === 'undefined') {
+        return;
+    }
+
     if (sessionStorage.getItem('authType') !== 'internal') {
         document.querySelector('#changePassButton').style.display = 'none';
     }
